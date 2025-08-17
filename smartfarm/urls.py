@@ -31,6 +31,9 @@ urlpatterns = [
     # Health Check
     path('api/health/', HealthCheckView.as_view(), name='health-check'),
     
+    # Authentication & Users
+    path('api/auth/', include('users.urls')),
+    
     # Core App
     path('api/v1/', include('core.urls')),
 ]
