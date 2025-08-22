@@ -37,6 +37,9 @@ urlpatterns = [
     # Suppliers
     path('api/suppliers/', include('suppliers.urls')),
 
+    # Market Prices
+    path('api/prices/', include('prices.urls')),
+
     # Core App
     path('api/v1/', include('core.urls')),
 ]

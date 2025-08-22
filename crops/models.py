@@ -2,8 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from django.contrib.postgres.fields import ArrayField
-from django.contrib.postgres.fields.jsonb import JSONField
+from django.db import models as dj_models  # alias to avoid confusion
 
 
 class Season(models.TextChoices):
@@ -35,13 +34,12 @@ class Crop(models.Model):
         help_text=_("Preferred soil type (e.g., loamy, clay, sandy)")
     )
     
-    regions = ArrayField(
-        models.CharField(max_length=100),
+    regions = models.JSONField(
         default=list,
-        help_text=_("List of regions where this crop is commonly grown")
+        help_text=_("List of regions where this crop is commonly grown (array of strings)")
     )
     
-    recommended_inputs = JSONField(
+    recommended_inputs = models.JSONField(
         default=dict,
         help_text=_("Recommended inputs like fertilizers, pesticides, etc.")
     )

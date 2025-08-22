@@ -61,6 +61,8 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'core',
     'suppliers',
+    'crops',
+    'prices',
 ]
 
 MIDDLEWARE = [
