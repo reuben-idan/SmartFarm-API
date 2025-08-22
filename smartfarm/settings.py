@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'prices',
     'recommendations',
     'yields',
+    'support',
 ]
 
 MIDDLEWARE = [

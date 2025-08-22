@@ -46,6 +46,9 @@ urlpatterns = [
     # Yield Forecasts
     path('api/yield/', include('yields.urls')),
 
+    # Support Help Desk
+    path('api/support/', include('support.urls')),
+
     # Core App
     path('api/v1/', include('core.urls')),
 ]
