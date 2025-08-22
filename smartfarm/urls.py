@@ -34,6 +34,9 @@ urlpatterns = [
     # Authentication & Users
     path('api/auth/', include('users.urls')),
     
+    # Suppliers
+    path('api/suppliers/', include('suppliers.urls')),
+
     # Core App
     path('api/v1/', include('core.urls')),
 ]
