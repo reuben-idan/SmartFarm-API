@@ -78,6 +78,8 @@ A modern, scalable RESTful API for agricultural management systems, built with D
 | `/api/farmers/{id}/` | GET, PATCH, DELETE | Manage farmer profile | Owner/Staff |
 | `/api/crops/` | GET, POST | List/Create crops | GET: No, POST: Staff |
 | `/api/crops/{id}/` | GET, PATCH, DELETE | Manage crop | GET: No, Others: Staff |
+| `/api/prices/` | GET | List market prices with filters and ordering | No |
+| `/api/recommendations/` | GET | Get top 5 crop recommendations for a region | No |
 
 ## Authentication
 
