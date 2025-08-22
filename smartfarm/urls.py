@@ -40,6 +40,9 @@ urlpatterns = [
     # Market Prices
     path('api/prices/', include('prices.urls')),
 
+    # Recommendations
+    path('api/recommendations/', include('recommendations.urls')),
+
     # Core App
     path('api/v1/', include('core.urls')),
 ]

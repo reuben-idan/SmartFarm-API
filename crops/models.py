@@ -41,6 +41,7 @@ class Crop(models.Model):
     
     recommended_inputs = models.JSONField(
         default=dict,
+        blank=True,
         help_text=_("Recommended inputs like fertilizers, pesticides, etc.")
     )
     
