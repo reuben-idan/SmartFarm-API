@@ -43,6 +43,9 @@ urlpatterns = [
     # Recommendations
     path('api/recommendations/', include('recommendations.urls')),
 
+    # Yield Forecasts
+    path('api/yield/', include('yields.urls')),
+
     # Core App
     path('api/v1/', include('core.urls')),
 ]

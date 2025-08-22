@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'crops',
     'prices',
     'recommendations',
+    'yields',
 ]
 
 MIDDLEWARE = [
@@ -149,6 +150,30 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Deterministic constants for mock yield forecasting
+# Base yields are in tons per hectare (t/ha)
+YIELD_BASE_YIELDS = {
+    'maize': 4.0,
+    'beans': 1.5,
+    'wheat': 3.5,
+    'rice': 5.0,
+}
+
+# Regional multipliers
+YIELD_REGION_MULTIPLIERS = {
+    'nairobi': 0.9,
+    'mombasa': 0.8,
+    'kisumu': 1.0,
+    'nakuru': 1.1,
+}
+
+# Season factors (align with crops.models.Season values)
+YIELD_SEASON_FACTORS = {
+    'major': 1.0,
+    'minor': 0.85,
+    'all': 0.95,
+}
 
 # Custom user model
 AUTH_USER_MODEL = 'users.User'
