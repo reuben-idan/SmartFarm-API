@@ -195,6 +195,18 @@ REST_FRAMEWORK = {
         'rest_framework.filters.OrderingFilter',
         'rest_framework.filters.SearchFilter',
     ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.ScopedRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',
+        'user': '1000/day',
+        'burst': '60/minute',
+        'sustained': '1000/day',
+        'write_ops': '100/hour',  # For write operations
+    },
     'ORDERING_PARAM': 'ordering',
     'SEARCH_PARAM': 'search',
     'DEFAULT_RENDERER_CLASSES': [
