@@ -140,6 +140,9 @@ curl -X POST http://localhost:8000/api/v1/farmers/ \
 | `/api/farmers/{id}/` | GET, PATCH, DELETE | Manage farmer profile | Owner/Staff |
 | `/api/crops/` | GET, POST | List/Create crops | GET: No, POST: Staff |
 | `/api/crops/{id}/` | GET, PATCH, DELETE | Manage crop | GET: No, Others: Staff |
+| `/api/prices/` | GET | List market prices with filters and ordering | No |
+| `/api/recommendations/` | GET | Get top 5 crop recommendations for a region | No |
+| `/api/yield/forecast/` | GET | Deterministic mock yield forecast and persistence | No |
 
 ## Authentication
 
@@ -163,6 +166,39 @@ Interactive API documentation is available at:
 
 - Swagger UI: `/api/docs/`
 - ReDoc: `/api/redoc/`
+
+## Yield Forecast (Mock)
+
+Endpoint: `GET /api/yield/forecast/`
+
+Query params:
+
+- `crop` (str|int, required) — crop name (case-insensitive) or ID
+- `region` (str, required) — must be supported (e.g., Nairobi, Mombasa, Kisumu, Nakuru)
+- `season` (str, required) — one of `major`, `minor`, `all`
+- `hectares` (decimal, required) — must be >= 0.01
+
+Deterministic formula:
+
+```
+forecast_yield = base_yield_by_crop * regional_multiplier * season_factor * hectares
+```
+
+Factors are configured in `smartfarm/settings.py`:
+
+- `YIELD_BASE_YIELDS` (t/ha)
+- `YIELD_REGION_MULTIPLIERS`
+- `YIELD_SEASON_FACTORS`
+
+Response fields:
+
+- `crop`, `region`, `season`, `hectares`, `forecast_yield`, `factors`
+
+Example:
+
+```bash
+curl "http://localhost:8000/api/yield/forecast/?crop=Maize&region=Nairobi&season=major&hectares=2.50"
+```
 
 ## Environment Variables
 

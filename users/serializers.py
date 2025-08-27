@@ -56,7 +56,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         user.save()
         
         # Assign role
-        group = Group.objects.get(name=role)
+        group, _ = Group.objects.get_or_create(name=role)
         user.groups.add(group)
         
         return user

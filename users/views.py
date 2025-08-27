@@ -31,7 +31,8 @@ class UserRegisterView(generics.CreateAPIView):
         })
         token_serializer.is_valid(raise_exception=True)
         
-        headers = self.get_success_headers(serializer.data)
+        # Use UserSerializer to avoid accessing 'role' field on the instance via UserRegisterSerializer
+        headers = self.get_success_headers(UserSerializer(user).data)
         return Response({
             'user': UserSerializer(user).data,
             'tokens': token_serializer.validated_data

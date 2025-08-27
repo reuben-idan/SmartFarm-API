@@ -34,6 +34,21 @@ urlpatterns = [
     # Authentication & Users
     path('api/auth/', include('users.urls')),
     
+    # Suppliers
+    path('api/suppliers/', include('suppliers.urls')),
+
+    # Market Prices
+    path('api/prices/', include('prices.urls')),
+
+    # Recommendations
+    path('api/recommendations/', include('recommendations.urls')),
+
+    # Yield Forecasts
+    path('api/yield/', include('yields.urls')),
+
+    # Support Help Desk
+    path('api/support/', include('support.urls')),
+
     # Core App
     path('api/v1/', include('core.urls')),
 ]
