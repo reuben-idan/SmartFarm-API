@@ -217,6 +217,58 @@ JWT_ACCESS_TOKEN_LIFETIME=300
 JWT_REFRESH_TOKEN_LIFETIME=86400
 ```
 
+## Development
+
+### Prerequisites
+
+- Python 3.9+
+- pip
+- PostgreSQL (for local development)
+
+### Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/reuben-idan/SmartFarm-API.git
+   cd SmartFarm-API
+   ```
+
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   # On Windows:
+   .\venv\Scripts\activate
+   # On macOS/Linux:
+   source venv/bin/activate
+   ```
+
+3. Install development dependencies:
+   ```bash
+   pip install -r requirements.txt
+   pip install black isort flake8 pytest-cov
+   ```
+
+### Code Style
+
+This project uses:
+- **Black** for code formatting
+- **isort** for import sorting
+- **flake8** for linting
+
+Run these commands before committing:
+```bash
+black .
+isort .
+flake8
+```
+
+### Testing
+
+Run tests with coverage:
+```bash
+pytest --cov=./ --cov-report=term-missing
+```
+
 ## Contributing
 
 1. Fork the repository
@@ -225,16 +277,23 @@ JWT_REFRESH_TOKEN_LIFETIME=86400
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+### Pull Request Requirements
+- All tests must pass
+- Code coverage must remain at 80% or higher
+- Code must be formatted with Black and imports sorted with isort
+- No flake8 warnings or errors
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Project Status
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/reuben-idan/SmartFarm-API/tests.yml?style=flat-square)](https://github.com/reuben-idan/SmartFarm-API/actions)
+[![CI](https://github.com/reuben-idan/SmartFarm-API/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/reuben-idan/SmartFarm-API/actions/workflows/ci.yml)
 [![Coverage Status](https://img.shields.io/codecov/c/github/reuben-idan/SmartFarm-API?style=flat-square)](https://codecov.io/gh/reuben-idan/SmartFarm-API)
 [![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg?style=flat-square)](https://www.python.org/downloads/)
 [![Django Version](https://img.shields.io/badge/django-5.0-brightgreen.svg?style=flat-square)](https://www.djangoproject.com/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
 ## Support
