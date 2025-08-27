@@ -160,6 +160,59 @@ Run the test suite with:
 python manage.py test
 ```
 
+## Database Seeding
+
+The application includes several management commands to seed the database with sample data for testing and demonstration purposes.
+
+### Available Seed Commands
+
+1. **Seed Roles and Permissions**
+   ```bash
+   python manage.py seed_roles
+   ```
+   Creates default user roles (farmer, supplier, agronomist, extension_officer) with appropriate permissions.
+
+2. **Seed Crops**
+   ```bash
+   python manage.py seed_crops
+   ```
+   Adds common crop data including maize, beans, and tea with their respective details.
+
+3. **Seed Market Prices**
+   ```bash
+   python manage.py seed_market_prices
+   ```
+   Populates the database with sample market price data for different crops.
+
+4. **Seed Sample Suppliers**
+   ```bash
+   python manage.py seed_suppliers_sample
+   ```
+   Creates sample supplier accounts with realistic business information.
+
+### Demo Script
+
+A convenience script is provided to set up a complete demo environment:
+
+```bash
+# Make the script executable
+chmod +x scripts/demo.sh
+
+# Run the demo script
+./scripts/demo.sh
+```
+
+This script will:
+1. Run database migrations
+2. Seed the database with sample data
+3. Create a superuser (admin/admin123)
+4. Generate sample API responses in the `docs/demo/` directory
+
+The generated files include:
+- `crops.json`: List of available crops
+- `market-prices.json`: Current market prices
+- `suppliers.json`: Registered suppliers
+
 ## API Documentation
 
 Interactive API documentation is available at:
