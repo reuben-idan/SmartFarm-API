@@ -8,7 +8,7 @@ A modern, scalable RESTful API for agricultural management systems, built with D
 - **Farmer Profiles**: Detailed farmer information with regional data
 - **Crop Management**: Comprehensive crop information with filtering and search
 - **Role-Based Access**: Multiple user roles (farmer, agronomist, supplier, extension officer)
-- **API Documentation**: Interactive API documentation using Swagger/ReDoc
+- **API Documentation**: Interactive API documentation using Swagger UI and ReDoc with JWT support
 
 ## Tech Stack
 
@@ -16,8 +16,70 @@ A modern, scalable RESTful API for agricultural management systems, built with D
 - **REST Framework**: Django REST Framework 3.15.1
 - **Authentication**: JWT (djangorestframework-simplejwt)
 - **Database**: PostgreSQL (production), SQLite (development)
-- **API Documentation**: drf-spectacular
+- **API Documentation**: drf-spectacular with Swagger UI and ReDoc
 - **Testing**: Django Test Framework
+
+## API Documentation
+
+### Interactive Documentation
+
+- **Swagger UI**: [/api/docs/](http://localhost:8000/api/docs/)
+- **ReDoc**: [/api/redoc/](http://localhost:8000/api/redoc/)
+- **Schema**: [/api/schema/](http://localhost:8000/api/schema/)
+
+### Authentication
+
+All API endpoints (except public ones) require JWT authentication. Include the token in the `Authorization` header:
+
+```http
+Authorization: Bearer <your_access_token>
+```
+
+### Example API Requests
+
+#### Get Access Token
+
+```bash
+curl -X POST http://localhost:8000/api/auth/token/ \
+  -H "Content-Type: application/json" \
+  -d '{"username": "your_username", "password": "your_password"}'
+```
+
+#### Refresh Access Token
+
+```bash
+curl -X POST http://localhost:8000/api/auth/token/refresh/ \
+  -H "Content-Type: application/json" \
+  -d '{"refresh": "your_refresh_token"}'
+```
+
+#### Get Current User Profile
+
+```bash
+curl -X GET http://localhost:8000/api/v1/users/me/ \
+  -H "Authorization: Bearer your_access_token"
+```
+
+#### Get All Crops (Public Endpoint)
+
+```bash
+curl -X GET http://localhost:8000/api/v1/crops/
+```
+
+#### Filter Crops by Type
+
+```bash
+curl -X GET "http://localhost:8000/api/v1/crops/?type=vegetable"
+```
+
+#### Create New Farmer (Admin Only)
+
+```bash
+curl -X POST http://localhost:8000/api/v1/farmers/ \
+  -H "Authorization: Bearer your_access_token" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "John Doe", "email": "john@example.com", "region": "North"}'
+```
 
 ## Getting Started
 

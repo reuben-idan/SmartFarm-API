@@ -179,8 +179,33 @@ CORS_ALLOW_CREDENTIALS = True
 # Spectacular Settings
 SPECTACULAR_SETTINGS = {
     'TITLE': 'SmartFarm API',
-    'DESCRIPTION': 'API for SmartFarm application',
+    'DESCRIPTION': 'Comprehensive API documentation for SmartFarm application with JWT authentication support',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    'SERVE_PUBLIC': True,
+    'SCHEMA_PATH_PREFIX': r'/api/v[0-9]',
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,
+        'displayRequestDuration': True,
+        'filter': True,
+    },
+    'SECURITY': [
+        {
+            'bearer': [],
+        }
+    ],
+    'SERVERS': [
+        {
+            'url': 'http://localhost:8000',
+            'description': 'Local Development Server'
+        },
+    ],
+    'TAGS': [
+        {'name': 'auth', 'description': 'Authentication endpoints'},
+        {'name': 'users', 'description': 'User management endpoints'},
+        {'name': 'core', 'description': 'Core application endpoints'},
+    ],
     'SCHEMA_PATH_PREFIX': r'/api/v[0-9]',
 }
