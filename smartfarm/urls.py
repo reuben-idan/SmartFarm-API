@@ -52,14 +52,19 @@ urlpatterns = [
     # Support Help Desk
     path('api/support/', include('support.urls')),
 
-    # Serve React Frontend - This should be the last URL pattern
-    re_path(r'^.*', TemplateView.as_view(template_name='index.html'))
-
     # Core App
     path('api/v1/', include('core.urls')),
+    
+    # Serve React Frontend - This should be the last URL pattern
+    re_path(r'^.*', TemplateView.as_view(template_name='index.html'))
 ]
 
-# Serve media files in development
+# Serve media and static files in development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+else:
+    # In production, serve static files through WhiteNoise
+    urlpatterns += [
+        re_path(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
+    ]

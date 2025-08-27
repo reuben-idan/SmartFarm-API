@@ -1,27 +1,19 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import App from './App'
-import './styles/globals.css'
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-    },
-  },
-})
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { DashboardLayout } from '@/components/layout/dashboard-layout'
+import { DashboardPage } from '@/pages/dashboard'
+import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
-  </React.StrictMode>
+    <Router>
+      <Routes>
+        <Route path="/" element={<DashboardLayout />}>
+          <Route index element={<DashboardPage />} />
+          {/* Add more routes here */}
+        </Route>
+      </Routes>
+    </Router>
+  </React.StrictMode>,
 )

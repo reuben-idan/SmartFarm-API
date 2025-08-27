@@ -1,18 +1,35 @@
-# SmartFarm API
+# SmartFarm Platform
 
-A modern, scalable RESTful API for agricultural management systems, built with Django and Django REST Framework.
+A comprehensive agricultural management platform with a modern React frontend and Django REST API backend.
 
 ## Features
 
-- **User Authentication**: JWT-based authentication with role-based access control
+### Frontend
+- **Modern UI**: Built with React 18, TypeScript, and Tailwind CSS
+- **Responsive Design**: Works on desktop and mobile devices
+- **Authentication**: Secure login and registration with JWT
+- **Dashboard**: Interactive dashboard with key metrics and visualizations
+- **Role-Based Access**: Different views for farmers, agronomists, and suppliers
+
+### Backend
+- **RESTful API**: Built with Django REST Framework
+- **User Authentication**: JWT-based with role-based access control
 - **Farmer Profiles**: Detailed farmer information with regional data
 - **Crop Management**: Comprehensive crop information with filtering and search
-- **Role-Based Access**: Multiple user roles (farmer, agronomist, supplier, extension officer)
-- **API Documentation**: Interactive API documentation using Swagger UI and ReDoc with JWT support
+- **API Documentation**: Interactive documentation using Swagger UI and ReDoc
 
 ## Tech Stack
 
-- **Backend**: Django 5.0
+### Frontend
+- **Framework**: React 18 with TypeScript
+- **Styling**: Tailwind CSS with CSS Modules
+- **State Management**: React Query for server state
+- **Routing**: React Router v6
+- **UI Components**: Headless UI and custom components
+- **Build Tool**: Vite
+
+### Backend
+- **Framework**: Django 5.0
 - **REST Framework**: Django REST Framework 3.15.1
 - **Authentication**: JWT (djangorestframework-simplejwt)
 - **Database**: PostgreSQL (production), SQLite (development)
@@ -86,10 +103,10 @@ curl -X POST http://localhost:8000/api/v1/farmers/ \
 ### Prerequisites
 
 - Python 3.9+
+- Node.js 18+
 - PostgreSQL (for production)
 - pip (Python package manager)
-
-### Installation
+- npm or pnpm installation
 
 1. Clone the repository:
    ```bash
@@ -335,6 +352,57 @@ pytest --cov=./ --cov-report=term-missing
 - Code coverage must remain at 80% or higher
 - Code must be formatted with Black and imports sorted with isort
 - No flake8 warnings or errors
+
+## Development
+
+### Frontend Development
+
+```bash
+# Start the Vite development server
+cd frontend
+npm run dev
+```
+
+The frontend will be available at http://localhost:3000 and will proxy API requests to http://localhost:8000
+
+### Backend Development
+
+```bash
+# Start the Django development server
+python manage.py runserver
+```
+
+### Running Tests
+
+```bash
+# Run backend tests
+python manage.py test
+
+# Run frontend tests
+cd frontend
+npm test
+```
+
+## Project Structure
+
+```
+smartfarm-api/
+├── frontend/               # React frontend
+│   ├── src/                # Source files
+│   │   ├── components/     # Reusable components
+│   │   ├── pages/          # Page components
+│   │   ├── lib/            # Utility functions
+│   │   └── styles/         # Global styles
+│   ├── public/             # Static files
+│   └── package.json        # Frontend dependencies
+│
+├── smartfarm/              # Django project settings
+├── core/                   # Core app with shared functionality
+├── users/                  # User management app
+├── crops/                  # Crop management app
+├── scripts/                # Utility scripts
+└── requirements.txt        # Python dependencies
+```
 
 ## License
 

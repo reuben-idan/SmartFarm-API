@@ -77,23 +77,46 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # Security middleware should be first
     'django.middleware.security.SecurityMiddleware',
+    
+    # WhiteNoise middleware for serving static files
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    
+    # Session middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
+    
+    # CORS middleware - should come before any middleware that can generate responses
     'corsheaders.middleware.CorsMiddleware',
+    
+    # Common middleware
     'django.middleware.common.CommonMiddleware',
+    
+    # CSRF protection
     'django.middleware.csrf.CsrfViewMiddleware',
+    
+    # Authentication middleware
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    
+    # Message middleware
     'django.contrib.messages.middleware.MessageMiddleware',
+    
+    # Clickjacking protection
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    # Custom middleware can be added here
 ]
 
 ROOT_URLCONF = 'smartfarm.urls'
 
+# Build paths for templates
+FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend')
+TEMPLATE_DIR = os.path.join(FRONTEND_DIR, 'dist')
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATE_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -154,36 +177,105 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
+# Base URL to use when referring to static files
 STATIC_URL = '/static/'
+
+# The absolute path to the directory where collectstatic will collect static files for deployment.
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Additional locations of static files
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+    os.path.join(FRONTEND_DIR, 'dist'),
+]
+
+# Simplified static file serving with WhiteNoise
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Media files
+# Media files (user-uploaded files)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Frontend build directory
-FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend/dist')
+# Frontend build directory (for development)
+FRONTEND_BUILD_DIR = os.path.join(FRONTEND_DIR, 'dist')
 
-# Add frontend build directory to static files
-STATICFILES_DIRS = [
-    FRONTEND_DIR,
-]
+# Ensure the static directory exists
+os.makedirs(STATIC_ROOT, exist_ok=True)
+os.makedirs(MEDIA_ROOT, exist_ok=True)
+
+# Whitenoise settings for serving frontend files
+WHITENOISE_ROOT = os.path.join(FRONTEND_BUILD_DIR, 'index.html')
+
+# Add index.html as a possible file to serve for root URL
+WHITENOISE_INDEX_FILE = True
 
 # CORS settings
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
+if DEBUG:
+    # In development, allow all origins and credentials
+    CORS_ALLOW_ALL_ORIGINS = True
+    CORS_ALLOW_CREDENTIALS = True
+else:
+    # In production, specify allowed origins
+    CORS_ALLOWED_ORIGINS = [
+        'https://your-production-domain.com',
+        'https://www.your-production-domain.com',
+    ]
+    CORS_ALLOW_CREDENTIALS = True
+
+# For development, you can also explicitly allow localhost
+if DEBUG:
+    CORS_ALLOWED_ORIGINS.extend([
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+    ])
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
 ]
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 # CSRF trusted origins
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
 ]
 
 # Default primary key field type
