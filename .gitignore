@@ -26,6 +26,10 @@ ENV/
 
 # Environment variables
 .env
+.env.local
+.env.development
+.env.test
+.env.production
 
 # Database
 *.sqlite3
@@ -39,6 +43,20 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
+
+# Frontend
+frontend/node_modules/
+frontend/.sass-cache/
+frontend/coverage/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.env.development
+frontend/.env.test
+frontend/.env.production
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
 
 # Avoid accidentally committing nested repo
 SmartFarm-API/
