@@ -1,0 +1,58 @@
+# Render Blueprint for SmartFarm API
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: smartfarm-api
+    env: python
+    buildCommand: |-
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+    startCommand: gunicorn smartfarm.wsgi:application --log-file -
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.8
+      - key: DJANGO_SETTINGS_MODULE
+        value: smartfarm.settings.production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
+      - key: ALLOWED_HOSTS
+        value: smartfarm-api.onrender.com,localhost,127.0.0.1
+      - key: CSRF_TRUSTED_ORIGINS
+        value: https://smartfarm-api.onrender.com,http://localhost:8000
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://smartfarm-web.onrender.com,http://localhost:3000
+      - key: DEBUG
+        value: 'False'
+    plan: free  # or 'standard' for production
+    numInstances: 1
+    healthCheckPath: /api/health/
+    autoDeploy: true
+
+  # Uncomment and configure if you need a PostgreSQL database
+  # - type: postgres
+  #   name: smartfarm-db
+  #   plan: free  # or 'standard' for production
+  #   databaseName: smartfarm
+  #   user: smartfarm
+  #   ipAllowList: []
+  #   deleteProtection: false
+
+# Uncomment if you need a cron job for periodic tasks
+# jobs:
+#   - type: cron
+#     name: update-market-prices
+#     schedule: "0 0 * * *"  # Daily at midnight
+#     env: python
+#     buildCommand: pip install -r requirements.txt
+#     startCommand: python manage.py update_market_prices
+#     envVars:
+#       - key: DJANGO_SETTINGS_MODULE
+#         value: smartfarm.settings.production
+#       - key: SECRET_KEY
+#         fromService:
+#           name: smartfarm-api
+#           property: env.SECRET_KEY
+#     plan: free
