@@ -1,59 +1,29 @@
-import { Toaster } from 'sonner';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider } from './components/theme-provider';
-import { AuthProvider } from './lib/auth/AuthContext';
-import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from '@/components/theme-provider';
+import { DashboardLayout } from '@/components/layout/dashboard-layout';
+import { DashboardPage } from '@/pages/dashboard';
+import { AuthProvider } from '@/contexts/AuthContext';
+import LoginPage from '@/pages/auth/LoginPage';
 
-// Pages
-import { DashboardPage } from './pages/dashboard';
-import { LoginPage } from './pages/auth/LoginPage';
-import { RegisterPage } from './pages/auth/RegisterPage';
-import { NotFoundPage } from './pages/NotFoundPage';
-
-// Create a client
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-    },
-  },
-});
-
-function App() {
+export function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light" storageKey="smartfarm-theme">
+    <ThemeProvider defaultTheme="light" storageKey="smartfarm-theme">
+      <Router>
         <AuthProvider>
-          <BrowserRouter>
-            <div className="min-h-screen bg-background">
-              <Routes>
-                {/* Public routes */}
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                
-                {/* Protected routes */}
-                <Route
-                  path="/"
-                  element={
-                    <ProtectedRoute>
-                      <DashboardPage />
-                    </ProtectedRoute>
-                  }
-                />
-                
-                {/* Catch all route */}
-                <Route path="*" element={<NotFoundPage />} />
-              </Routes>
-              
-              <Toaster position="top-right" richColors />
-            </div>
-          </BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/"
+              element={
+                <DashboardLayout>
+                  <DashboardPage />
+                </DashboardLayout>
+              }
+            />
+          </Routes>
         </AuthProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+      </Router>
+    </ThemeProvider>
   );
 }
 

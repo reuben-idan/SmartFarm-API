@@ -1,25 +1,95 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Users, Sprout, LineChart, Plus, AlertTriangle } from "lucide-react"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
+import { Users, Sprout, Plus, AlertTriangle, Droplet, CloudRain, Activity, Sun } from "lucide-react"
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  Legend
+} from 'recharts'
+import { cn } from "@/utils"
+
+// Chart colors
+const COLORS = {
+  primary: '#3b82f6',
+  secondary: '#8b5cf6',
+  success: '#10b981',
+  warning: '#f59e0b',
+  danger: '#ef4444',
+}
+
+// Mock data for the dashboard
+const farmerData = [
+  { name: 'Jan', count: 45 },
+  { name: 'Feb', count: 60 },
+  { name: 'Mar', count: 52 },
+  { name: 'Apr', count: 78 },
+  { name: 'May', count: 65 },
+  { name: 'Jun', count: 90 },
+  { name: 'Jul', count: 85 },
+  { name: 'Aug', count: 100 },
+  { name: 'Sep', count: 95 },
+  { name: 'Oct', count: 110 },
+  { name: 'Nov', count: 125 },
+  { name: 'Dec', count: 140 },
+];
 
 export function DashboardPage() {
   // Sample data for charts
-  const farmerData = [
-    { name: 'Jan', count: 20 },
-    { name: 'Feb', count: 45 },
-    { name: 'Mar', count: 28 },
-    { name: 'Apr', count: 80 },
-    { name: 'May', count: 99 },
-    { name: 'Jun', count: 43 },
+  const stats = [
+    { 
+      title: 'Total Farmers', 
+      value: '1,248', 
+      change: '+12.5%', 
+      icon: Users,
+      trend: 'up',
+      color: 'text-blue-500',
+      bgColor: 'bg-blue-500/10'
+    },
+    { 
+      title: 'Active Crops', 
+      value: '24', 
+      change: '+5.2%', 
+      icon: Sprout,
+      trend: 'up',
+      color: 'text-emerald-500',
+      bgColor: 'bg-emerald-500/10'
+    },
+    { 
+      title: 'Avg. Yield (kg/ha)', 
+      value: '2,450', 
+      change: '+8.1%', 
+      icon: Activity,
+      trend: 'up',
+      color: 'text-purple-500',
+      bgColor: 'bg-purple-500/10'
+    },
+    { 
+      title: 'Weather', 
+      value: 'Sunny', 
+      change: '26°C', 
+      icon: Sun,
+      trend: 'stable',
+      color: 'text-yellow-500',
+      bgColor: 'bg-yellow-500/10'
+    },
   ]
 
   const cropData = [
-    { name: 'Maize', value: 35 },
-    { name: 'Beans', value: 25 },
-    { name: 'Tea', value: 20 },
-    { name: 'Coffee', value: 15 },
-    { name: 'Other', value: 5 },
+    { name: 'Maize', value: 35, color: '#0ea5e9' },
+    { name: 'Beans', value: 25, color: '#8b5cf6' },
+    { name: 'Tea', value: 20, color: '#22c55e' },
+    { name: 'Coffee', value: 15, color: '#f59e0b' },
+    { name: 'Other', value: 5, color: '#ef4444' },
   ]
 
   const priceData = [
@@ -31,21 +101,221 @@ export function DashboardPage() {
     { name: 'Jun', maize: 33, beans: 105, tea: 58 },
   ]
 
-  const COLORS = ['#0ea5e9', '#8b5cf6', '#22c55e', '#f59e0b', '#ef4444']
+  const recentActivities = [
+    { id: 1, type: 'harvest', crop: 'Maize', farmer: 'John Doe', time: '2 hours ago', status: 'completed' },
+    { id: 2, type: 'planting', crop: 'Beans', farmer: 'Jane Smith', time: '5 hours ago', status: 'in-progress' },
+    { id: 3, type: 'irrigation', crop: 'Tea', farmer: 'Robert Johnson', time: '1 day ago', status: 'pending' },
+    { id: 4, type: 'fertilizer', crop: 'Coffee', farmer: 'Emily Davis', time: '2 days ago', status: 'completed' },
+  ]
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Welcome back, Admin</h2>
-          <p className="text-slate-400">Here's what's happening with your farm data today</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            Welcome back, Admin
+          </h1>
+          <p className="text-muted-foreground">Here's what's happening with your farm data today</p>
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="outline" className="glass">
+          <Button className="glass-button">
             <Plus className="mr-2 h-4 w-4" />
             Add Record
           </Button>
         </div>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat, i) => (
+          <Card key={i} className="glass-card-hover">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                {stat.title}
+              </CardTitle>
+              <div className={cn("p-2 rounded-lg", stat.bgColor)}>
+                <stat.icon className={cn("h-4 w-4", stat.color)} />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stat.value}</div>
+              <p className="text-xs text-muted-foreground flex items-center">
+                <span className={cn(
+                  stat.trend === 'up' ? 'text-emerald-500' : 
+                  stat.trend === 'down' ? 'text-red-500' : 'text-amber-500',
+                  'font-medium'
+                )}>
+                  {stat.change}
+                </span> from last month
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Charts */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="col-span-4">
+          <CardHeader>
+            <CardTitle>Market Prices (KES/kg)</CardTitle>
+            <CardDescription>Average market prices for the last 6 months</CardDescription>
+          </CardHeader>
+          <CardContent className="pl-2">
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={priceData}>
+                  <CartesianGrid strokeDasharray="3 3" className="opacity-20" />
+                  <XAxis 
+                    dataKey="name" 
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis 
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `KES ${value}`}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'rgba(0, 0, 0, 0.8)', 
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '0.5rem',
+                      backdropFilter: 'blur(10px)'
+                    }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="maize" 
+                    stroke="#0ea5e9" 
+                    strokeWidth={2} 
+                    dot={false}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="beans" 
+                    stroke="#8b5cf6" 
+                    strokeWidth={2} 
+                    dot={false}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="tea" 
+                    stroke="#22c55e" 
+                    strokeWidth={2} 
+                    dot={false}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="col-span-3">
+          <CardHeader>
+            <CardTitle>Crop Distribution</CardTitle>
+            <CardDescription>Percentage of crops grown</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={cropData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {cropData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'rgba(0, 0, 0, 0.8)', 
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '0.5rem',
+                      backdropFilter: 'blur(10px)'
+                    }}
+                  />
+                  <Legend 
+                    layout="vertical"
+                    verticalAlign="middle"
+                    align="right"
+                    formatter={(value, entry: any, index) => (
+                      <span className="text-xs text-muted-foreground">
+                        {value}: {cropData[index].value}%
+                      </span>
+                    )}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Activities */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="col-span-7">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Recent Activities</CardTitle>
+                <CardDescription>Latest farm activities and updates</CardDescription>
+              </div>
+              <Button variant="ghost" size="sm" className="text-muted-foreground">
+                View All
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {recentActivities.map((activity) => (
+                <div key={activity.id} className="flex items-center p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                  <div className="flex-shrink-0 mr-4">
+                    <div className="p-2 rounded-full bg-primary/10 text-primary">
+                      {activity.type === 'harvest' ? (
+                        <Sprout className="h-5 w-5" />
+                      ) : activity.type === 'planting' ? (
+                        <Droplet className="h-5 w-5" />
+                      ) : activity.type === 'irrigation' ? (
+                        <CloudRain className="h-5 w-5" />
+                      ) : (
+                        <Activity className="h-5 w-5" />
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">
+                      {activity.farmer} - {activity.crop}
+                    </p>
+                    <p className="text-xs text-muted-foreground capitalize">
+                      {activity.type} • {activity.time}
+                    </p>
+                  </div>
+                  <span className={cn(
+                    "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
+                    activity.status === 'completed' ? 'bg-green-100 text-green-800' :
+                    activity.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                    'bg-amber-100 text-amber-800'
+                  )}>
+                    {activity.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Stats Grid */}
@@ -133,9 +403,10 @@ export function DashboardPage() {
                     dataKey="value"
                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                   >
-                    {cropData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
+                    {cropData.map((entry: { name: string, value: number }, index: number) => {
+                      const colors = Object.values(COLORS);
+                      return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
+                    })}
                   </Pie>
                   <Tooltip 
                     contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '0.5rem' }}

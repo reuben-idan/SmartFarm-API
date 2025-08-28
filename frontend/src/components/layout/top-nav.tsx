@@ -1,59 +1,158 @@
+"use client"
+
 import * as React from "react"
-import { Search, Bell, User, ChevronDown, LogOut } from "lucide-react"
+import { Bell, Sun, Moon, Menu, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { cn } from "@/utils"
+import { useTheme } from "next-themes"
+import { UserNav } from "@/components/user-nav"
 
-export function TopNav() {
+interface TopNavProps {
+  isMobileMenuOpen?: boolean
+  onMenuClick?: () => void
+  className?: string
+  user?: {
+    name?: string | null
+    email?: string | null
+    image?: string | null
+  }
+}
+
+export function TopNav({ 
+  isMobileMenuOpen = false, 
+  onMenuClick,
+  className,
+  user
+}: TopNavProps) {
+  const { theme, setTheme } = useTheme()
+  const [isScrolled, setIsScrolled] = React.useState(false)
+  const [isSearchFocused, setIsSearchFocused] = React.useState(false)
+
+  // Handle scroll effect for the header
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark')
+  }
+
   return (
-    <header className="glass sticky top-0 z-40 flex h-16 items-center justify-between border-b border-white/10 bg-white/5 px-6 backdrop-blur">
-      <div className="flex items-center space-x-4">
-        <h1 className="text-xl font-semibold text-white">SmartFarm Dashboard</h1>
-      </div>
-      
-      <div className="flex flex-1 items-center justify-between px-4 md:justify-end md:space-x-4">
-        <div className="w-full max-w-md">
+    <header 
+      className={cn(
+        "sticky top-0 z-30 flex h-16 items-center gap-4 bg-background/80 px-4 backdrop-blur-sm transition-all duration-200 supports-[backdrop-filter]:bg-background/60 md:px-6",
+        isScrolled && "shadow-sm",
+        className
+      )}
+    >
+      {/* Mobile menu button - hidden on desktop */}
+      <button
+        onClick={onMenuClick}
+        className="mr-2 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground md:hidden"
+        aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+      >
+        <Menu className="h-5 w-5" />
+      </button>
+
+      <div className="flex flex-1 items-center justify-between gap-4 md:gap-6">
+        <div className="flex-1 max-w-md">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search..."
-              className="w-full rounded-full border-0 bg-white/10 pl-10 text-white placeholder:text-slate-400 focus-visible:ring-1 focus-visible:ring-primary-500 focus-visible:ring-offset-0"
+              placeholder="Search farmers, crops, suppliers..."
+              className="w-full rounded-full bg-muted/50 pl-9 pr-4 transition-all focus:bg-background focus:ring-1 focus:ring-primary/50"
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
             />
           </div>
         </div>
-        
-        <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="icon" className="relative rounded-full">
-            <Bell className="h-5 w-5 text-slate-300" />
-            <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-red-500" />
+
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="rounded-full text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+            onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {theme === 'dark' ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
           </Button>
           
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex items-center space-x-2 rounded-full border border-white/10 px-3 hover:bg-white/10"
-              >
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-600">
-                  <User className="h-4 w-4 text-white" />
-                </div>
-                <span className="hidden text-sm font-medium text-white md:inline-flex">
-                  Admin User
-                </span>
-                <ChevronDown className="h-4 w-4 text-slate-400" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="relative rounded-full text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+            aria-label="View notifications"
+          >
+            <Bell className="h-5 w-5" />
+            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary ring-2 ring-background" />
+          </Button>
+          
+          <div className="ml-2">
+            <UserNav user={user} />
+          </div>
+        </div>
+              <Button variant="ghost" className="w-full text-sm">
+                View all notifications
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" sideOffset={10}>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-slate-700" />
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Theme Toggle */}
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={toggleTheme}
+          className="rounded-full"
+        >
+          {theme === 'dark' ? (
+            <Sun className="h-5 w-5" />
+          ) : (
+            <Moon className="h-5 w-5" />
+          )}
+          <span className="sr-only">Toggle theme</span>
+        </Button>
+
+        {/* User Menu */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="relative h-10 w-auto pl-2 pr-3 rounded-full gap-2">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src="/avatars/01.png" alt="Admin User" />
+                <AvatarFallback className="bg-primary/10 text-primary">AU</AvatarFallback>
+              </Avatar>
+              <span className="hidden md:inline-flex items-center text-sm font-medium">
+                Admin
+                <ChevronDown className="ml-1 h-4 w-4 opacity-70" />
+              </span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56" align="end" sideOffset={10}>
+            <DropdownMenuLabel className="font-normal p-4">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src="/avatars/01.png" alt="Admin User" />
+                  <AvatarFallback className="bg-primary/10 text-primary">AU</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-medium">Admin User</p>
+                  <p className="text-xs text-muted-foreground">admin@smartfarm.com</p>
+                </div>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator className="bg-border/30" />
+            <DropdownMenuGroup>
               <DropdownMenuItem className="cursor-pointer">
                 <User className="mr-2 h-4 w-4" />
                 <span>Profile</span>
@@ -62,14 +161,18 @@ export function TopNav() {
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-slate-700" />
-              <DropdownMenuItem className="cursor-pointer text-red-500 hover:!bg-red-500/10 hover:!text-red-500">
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
+              <DropdownMenuItem className="cursor-pointer">
+                <HelpCircle className="mr-2 h-4 w-4" />
+                <span>Help & Support</span>
               </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator className="bg-border/30" />
+            <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive">
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Log out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   )
