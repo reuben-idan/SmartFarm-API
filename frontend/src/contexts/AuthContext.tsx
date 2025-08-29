@@ -8,6 +8,7 @@ import {
 } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { authService } from "@/lib/api/auth.service";
+import { toast } from "sonner";
 
 // Define the user type
 export interface User {
@@ -16,12 +17,20 @@ export interface User {
   first_name: string;
   last_name: string;
   role: string;
+  token?: string;
+}
+
+interface AuthResponse {
+  user: User;
+  token: string;
 }
 
 // Define the auth context type
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
+  loginWithGithub: () => Promise<void>;
   register: (data: {
     first_name: string;
     last_name: string;
@@ -68,28 +77,63 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [checkAuth]);
 
   // Login function
-  const login = async (email: string, password: string) => {
+  const login = useCallback(
+    async (email: string, password: string) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await authService.login(email, password) as AuthResponse;
+        setUser(response.user);
+        localStorage.setItem("token", response.token);
+        toast.success("Successfully logged in");
+        navigate(location.state?.from?.pathname || "/dashboard", {
+          replace: true,
+        });
+      } catch (err: any) {
+        const errorMessage = err.response?.data?.message || "Invalid email or password";
+        setError(errorMessage);
+        toast.error(errorMessage);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [navigate, location.state?.from?.pathname]
+  );
+
+  // Google OAuth login
+  const loginWithGoogle = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const { access, refresh, user } = await authService.login({
-        email,
-        password,
-      });
-      authService.setTokens(access, refresh);
-      authService.setAuthHeader(access);
-      setUser(user as any);
-
-      // Redirect to the dashboard or the previous location
-      const from = location.state?.from?.pathname || "/";
-      navigate(from, { replace: true });
+      // This URL should point to your backend OAuth endpoint
+      window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
     } catch (err: any) {
-      setError(err?.message || "Failed to log in. Please try again.");
+      const errorMessage = err.response?.data?.message || "Failed to login with Google";
+      setError(errorMessage);
+      toast.error(errorMessage);
       throw err;
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // GitHub OAuth login
+  const loginWithGithub = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // This URL should point to your backend OAuth endpoint
+      window.location.href = `${import.meta.env.VITE_API_URL}/auth/github`;
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || "Failed to login with GitHub";
+      setError(errorMessage);
+      toast.error(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   // Register function
   const register = async (data: {
@@ -128,6 +172,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         user,
         login,
+        loginWithGoogle,
+        loginWithGithub,
         register,
         logout,
         loading,
