@@ -1,4 +1,4 @@
-""
+"""
 Test settings for SmartFarm API.
 
 - Use SQLite for faster test execution

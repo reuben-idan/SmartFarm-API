@@ -1,4 +1,4 @@
-""
+"""
 Base serializers for the SmartFarm API.
 
 Provides common serialization logic that can be reused across the application.
@@ -24,7 +24,7 @@ class BaseModelSerializer(serializers.ModelSerializer):
         return [f for f in fields if f not in ['deleted_at', 'is_deleted']]
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
-    ""
+    """
     A ModelSerializer that takes an additional `fields` argument that
     controls which fields should be displayed.
     """
@@ -38,14 +38,14 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
         if fields is not None:
             # Drop any fields that are not specified in the `fields` argument.
             allowed = set(fields)
-            existing = set(self.fields)
+            existing = set(self.fields.keys())
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
 
 class NestedCreateMixin:
-    ""
+    """
     Mixin that allows for nested creation of related objects.
-    ""
+    """
     def create(self, validated_data):
         # Get the nested serializers
         nested_serializers = {}
