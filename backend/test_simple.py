@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+clea#!/usr/bin/env python
 """
 Simple test to verify the test environment is working.
 """

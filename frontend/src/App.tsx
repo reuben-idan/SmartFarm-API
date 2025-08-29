@@ -3,11 +3,12 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { DashboardPage } from '@/pages/dashboard';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { WebSocketProvider } from '@/contexts/WebSocketContext';
 import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
 import { QueryProvider } from '@/providers/QueryProvider';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { ToastProvider } from '@/components/ui/toast';
+import { Toaster } from 'sonner';
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const { isAuthenticated, loading } = useAuth();
@@ -37,11 +38,12 @@ const GlobalErrorFallback = () => (
 
 export function App() {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <ErrorBoundary fallback={<GlobalErrorFallback />}>
-        <QueryProvider>
+    <ErrorBoundary fallback={<GlobalErrorFallback />}>
+      <QueryProvider>
+        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
           <AuthProvider>
-            <ToastProvider>
+            <WebSocketProvider>
+              <Toaster position="top-right" richColors />
               <Router>
                 <Routes>
                   <Route path="/login" element={<LoginPage />} />
@@ -50,19 +52,19 @@ export function App() {
                     path="/"
                     element={
                       <ProtectedRoute>
-                        <DashboardLayout />
+                        <DashboardLayout>
+                          <DashboardPage />
+                        </DashboardLayout>
                       </ProtectedRoute>
                     }
-                  >
-                    <Route index element={<DashboardPage />} />
-                  </Route>
+                  />
                 </Routes>
               </Router>
-            </ToastProvider>
+            </WebSocketProvider>
           </AuthProvider>
-        </QueryProvider>
-      </ErrorBoundary>
-    </ThemeProvider>
+        </ThemeProvider>
+      </QueryProvider>
+    </ErrorBoundary>
   );
 }
 
