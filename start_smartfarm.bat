@@ -1,0 +1,48 @@
+@echo off
+setlocal
+
+:: Set environment variables
+set PYTHONPATH=%~dp0
+set DJANGO_SETTINGS_MODULE=smartfarm.settings.local
+
+:: Create virtual environment if it doesn't exist
+if not exist "C:\temp\smartfarm-venv" (
+    echo Creating virtual environment...
+    py -3.12 -m venv C:\temp\smartfarm-venv
+    if errorlevel 1 (
+        echo Failed to create virtual environment
+        exit /b 1
+    )
+)
+
+:: Activate virtual environment
+call C:\temp\smartfarm-venv\Scripts\activate.bat
+if errorlevel 1 (
+    echo Failed to activate virtual environment
+    exit /b 1
+)
+
+:: Install requirements
+echo Installing requirements...
+pip install -r requirements.txt
+if errorlevel 1 (
+    echo Failed to install requirements
+    exit /b 1
+)
+
+:: Run migrations
+echo Running migrations...
+python manage.py migrate
+if errorlevel 1 (
+    echo Failed to run migrations
+    exit /b 1
+)
+
+:: Create superuser if it doesn't exist
+echo from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='admin').exists() or User.objects.create_superuser('admin', 'admin@example.com', 'admin') | python manage.py shell
+
+:: Run the server
+echo Starting development server...
+python manage.py runserver 8001
+
+pause

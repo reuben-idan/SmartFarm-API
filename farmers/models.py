@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from django.core.validators import MinValueValidator
-from django.contrib.postgres.fields import ArrayField
+from django.db.models import JSONField
 
 
 class FarmerProfile(models.Model):
@@ -23,10 +23,9 @@ class FarmerProfile(models.Model):
         decimal_places=2,
         validators=[MinValueValidator(0.01)]
     )
-    crops_grown = ArrayField(
-        models.CharField(max_length=100),
+    crops_grown = JSONField(
         default=list,
-        help_text="List of crops grown by the farmer"
+        help_text="List of crops grown by the farmer (stored as JSON)"
     )
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
