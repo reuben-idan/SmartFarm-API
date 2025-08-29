@@ -1,20 +1,21 @@
 import { createContext, useContext, ReactNode, useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import { authService } from '@/lib/api/auth.service';
 
 // Define the user type
 export interface User {
-  id: string;
+  id: number;
   email: string;
-  name: string;
-  role: 'admin' | 'user';
-  avatar?: string;
+  first_name: string;
+  last_name: string;
+  role: string;
 }
 
 // Define the auth context type
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
+  register: (data: { first_name: string; last_name: string; email: string; password: string; role: string }) => Promise<void>;
   logout: () => void;
   loading: boolean;
   error: string | null;
@@ -35,18 +36,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Check if user is logged in on initial load
   const checkAuth = useCallback(async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = authService.getAccessToken();
       if (token) {
-        // Set the token in the API client
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        // Fetch user data
-        const response = await axios.get('/api/auth/me');
-        setUser(response.data);
+        authService.setAuthHeader(token);
+        const me = await authService.getCurrentUser();
+        setUser(me as any);
       }
     } catch (err) {
-      // If there's an error, clear the token and user data
-      localStorage.removeItem('token');
-      delete axios.defaults.headers.common['Authorization'];
+      authService.logout();
       setUser(null);
     } finally {
       setLoading(false);
@@ -62,21 +59,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post('/api/auth/login', { email, password });
-      const { token, user } = response.data;
-      
-      // Store the token
-      localStorage.setItem('token', token);
-      // Set the token in the API client
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      // Update the user state
-      setUser(user);
+      const { access, refresh, user } = await authService.login({ email, password });
+      authService.setTokens(access, refresh);
+      authService.setAuthHeader(access);
+      setUser(user as any);
       
       // Redirect to the dashboard or the previous location
       const from = location.state?.from?.pathname || '/';
       navigate(from, { replace: true });
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to log in. Please try again.');
+      setError(err?.message || 'Failed to log in. Please try again.');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Register function
+  const register = async (data: { first_name: string; last_name: string; email: string; password: string; role: string }) => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Backend expects username and password2
+      await authService.register({
+        ...data,
+        username: data.email,
+        password2: data.password,
+      } as any);
+    } catch (err: any) {
+      setError(err?.message || 'Failed to register. Please try again.');
       throw err;
     } finally {
       setLoading(false);
@@ -85,13 +96,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Logout function
   const logout = () => {
-    // Clear the token
-    localStorage.removeItem('token');
-    // Remove the token from the API client
-    delete axios.defaults.headers.common['Authorization'];
-    // Clear the user state
+    authService.logout();
     setUser(null);
-    // Redirect to the login page
     navigate('/login');
   };
 
@@ -100,6 +106,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         user,
         login,
+        register,
         logout,
         loading,
         error,
@@ -120,30 +127,4 @@ export const useAuth = () => {
   return context;
 };
 
-// Configure axios defaults
-axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-axios.defaults.withCredentials = true;
-
-// Add a response interceptor to handle 401 responses
-axios.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    if (error.response?.status === 401) {
-      // If we get a 401, try to refresh the token
-      try {
-        const response = await axios.post('/api/auth/refresh-token');
-        const { token } = response.data;
-        localStorage.setItem('token', token);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        // Retry the original request
-        return axios(error.config);
-      } catch (err) {
-        // If refresh token fails, log the user out
-        localStorage.removeItem('token');
-        delete axios.defaults.headers.common['Authorization'];
-        window.location.href = '/login';
-      }
-    }
-    return Promise.reject(error);
-  }
-);
+// Axios is configured in '@/lib/api/client'
