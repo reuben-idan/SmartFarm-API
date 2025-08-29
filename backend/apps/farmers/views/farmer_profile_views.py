@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django_filters.rest_framework import DjangoFilterBackend
 
 from apps.api.base_views import BaseModelViewSet
-from ..models import FarmerProfile
-from ..serializers.farmer_profile_serializers import (
+from apps.farmers.models import FarmerProfile
+from apps.farmers.serializers.farmer_profile_serializers import (
     FarmerProfileSerializer,
     FarmerProfileCreateUpdateSerializer
 )
