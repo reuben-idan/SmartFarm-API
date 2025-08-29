@@ -1,6 +1,9 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   darkMode: ["class"],
+  corePlugins: {
+    preflight: true,
+  },
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -8,44 +11,54 @@ module.exports = {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: "1.5rem",
       screens: {
-        "2xl": "1400px",
+        "2xl": "1440px",
       },
     },
     extend: {
       colors: {
+        // Modern color palette with glassmorphism support
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
         primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+          50: 'hsl(var(--primary-50))',
+          100: 'hsl(var(--primary-100))',
+          200: 'hsl(var(--primary-200))',
+          300: 'hsl(var(--primary-300))',
+          400: 'hsl(var(--primary-400))',
+          500: 'hsl(var(--primary-500))',
+          600: 'hsl(var(--primary-600))',
+          700: 'hsl(var(--primary-700))',
+          800: 'hsl(var(--primary-800))',
+          900: 'hsl(var(--primary-900))',
+          950: 'hsl(var(--primary-950))',
         },
         secondary: {
-          50: '#f5f3ff',
-          100: '#ede9fe',
-          200: '#ddd6fe',
-          300: '#c4b5fd',
-          400: '#a78bfa',
-          500: '#8b5cf6',
-          600: '#7c3aed',
-          700: '#6d28d9',
-          800: '#5b21b6',
-          900: '#4c1d95',
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
         },
         success: {
+          DEFAULT: 'hsl(var(--success))',
+          foreground: 'hsl(var(--success-foreground))',
           50: '#f0fdf4',
           100: '#dcfce7',
           500: '#22c55e',
           700: '#15803d',
         },
         warning: {
+          DEFAULT: 'hsl(var(--warning))',
+          foreground: 'hsl(var(--warning-foreground))',
           50: '#fffbeb',
           100: '#fef3c7',
           500: '#f59e0b',

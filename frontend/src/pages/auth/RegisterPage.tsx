@@ -1,54 +1,67 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../lib/auth/AuthContext';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../components/ui/card';
-import { Alert, AlertDescription } from '../../components/ui/alert';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { Alert, AlertDescription } from "../../components/ui/alert";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
 
 export const RegisterPage: React.FC = () => {
   const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
-    role: 'farmer',
+    first_name: "",
+    last_name: "",
+    email: "",
+    password: "",
+    password_confirmation: "",
+    role: "farmer",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { register } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleRoleChange = (value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      role: value
+      role: value,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     // Basic validation
     if (formData.password !== formData.password_confirmation) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters long');
+      setError("Password must be at least 8 characters long");
       return;
     }
 
@@ -62,12 +75,12 @@ export const RegisterPage: React.FC = () => {
         password: formData.password,
         role: formData.role,
       });
-      
+
       // Redirect to dashboard after successful registration
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (err: any) {
-      console.error('Registration error:', err);
-      setError(err.message || 'Registration failed. Please try again.');
+      console.error("Registration error:", err);
+      setError(err.message || "Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -81,8 +94,11 @@ export const RegisterPage: React.FC = () => {
             Create a new account
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Already have an account?{' '}
-            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
               Sign in
             </Link>
           </p>
@@ -91,7 +107,9 @@ export const RegisterPage: React.FC = () => {
         <Card className="w-full">
           <CardHeader>
             <CardTitle>Create an account</CardTitle>
-            <CardDescription>Enter your details to create a new account</CardDescription>
+            <CardDescription>
+              Enter your details to create a new account
+            </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
@@ -143,8 +161,8 @@ export const RegisterPage: React.FC = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="role">I am a</Label>
-                <Select 
-                  value={formData.role} 
+                <Select
+                  value={formData.role}
                   onValueChange={handleRoleChange}
                   disabled={isLoading}
                 >
@@ -187,15 +205,21 @@ export const RegisterPage: React.FC = () => {
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Creating account...' : 'Create account'}
+                {isLoading ? "Creating account..." : "Create account"}
               </Button>
               <p className="px-8 text-center text-sm text-muted-foreground">
-                By clicking continue, you agree to our{' '}
-                <Link to="/terms" className="underline underline-offset-4 hover:text-primary">
+                By clicking continue, you agree to our{" "}
+                <Link
+                  to="/terms"
+                  className="underline underline-offset-4 hover:text-primary"
+                >
                   Terms of Service
-                </Link>{' '}
-                and{' '}
-                <Link to="/privacy" className="underline underline-offset-4 hover:text-primary">
+                </Link>{" "}
+                and{" "}
+                <Link
+                  to="/privacy"
+                  className="underline underline-offset-4 hover:text-primary"
+                >
                   Privacy Policy
                 </Link>
                 .
