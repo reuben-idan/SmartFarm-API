@@ -2,6 +2,197 @@
 
 A comprehensive agricultural management platform with a modern React frontend and Django REST API backend.
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Django](https://img.shields.io/badge/django-5.0-green.svg)](https://www.djangoproject.com/)
+[![React](https://img.shields.io/badge/react-18-61dafb.svg)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/typescript-5.0-3178c6.svg)](https://www.typescriptlang.org/)
+
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Environment Setup](#environment-setup)
+  - [Backend Setup](#backend-setup)
+  - [Frontend Setup](#frontend-setup)
+- [Running the Application](#running-the-application)
+- [API Documentation](#api-documentation)
+- [Testing](#testing)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.10+
+- Node.js 18+
+- PostgreSQL 13+
+- Redis 6+
+- Git
+
+### Environment Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/smartfarm-api.git
+   cd smartfarm-api
+   ```
+
+2. **Set up Python virtual environment**
+   ```bash
+   # On Windows
+   python -m venv venv
+   .\venv\Scripts\activate
+   
+   # On macOS/Linux
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. **Install Python dependencies**
+   ```bash
+   pip install -r backend/requirements/development.txt
+   ```
+
+4. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Edit the `.env` file with your configuration:
+   ```env
+   # Django
+   DEBUG=True
+   SECRET_KEY=your-secret-key-here
+   DJANGO_ENV=development
+   
+   # Database
+   DB_NAME=smartfarm
+   DB_USER=postgres
+   DB_PASSWORD=postgres
+   DB_HOST=localhost
+   DB_PORT=5432
+   
+   # CORS
+   CORS_ALLOWED_ORIGINS=http://localhost:3000
+   
+   # JWT
+   JWT_SECRET_KEY=your-jwt-secret-key-here
+   ACCESS_TOKEN_LIFETIME=3600
+   REFRESH_TOKEN_LIFETIME=86400
+   ```
+
+### Backend Setup
+
+1. **Run database migrations**
+   ```bash
+   cd backend
+   python manage.py migrate
+   ```
+
+2. **Create superuser (admin)**
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+3. **Load initial data (optional)**
+   ```bash
+   python manage.py loaddata initial_data.json
+   ```
+
+### Frontend Setup
+
+1. **Install Node.js dependencies**
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+2. **Set up frontend environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Edit `.env.local` with your configuration:
+   ```env
+   VITE_API_URL=http://localhost:8000/api/
+   VITE_APP_NAME=SmartFarm
+   ```
+
+## Running the Application
+
+### Development
+
+1. **Start backend server**
+   ```bash
+   # In backend directory
+   python manage.py runserver
+   ```
+
+2. **Start frontend development server**
+   ```bash
+   # In frontend directory
+   npm run dev
+   ```
+
+3. **Access the application**
+   - Frontend: http://localhost:3000
+   - API: http://localhost:8000/api/
+   - Admin: http://localhost:8000/admin/
+
+### Production
+
+For production deployment, please refer to the [Deployment Guide](DEPLOYMENT.md).
+
+## API Documentation
+
+Interactive API documentation is available at:
+
+- **Swagger UI**: [/api/docs/](http://localhost:8000/api/docs/)
+- **ReDoc**: [/api/redoc/](http://localhost:8000/api/redoc/)
+
+## Testing
+
+### Backend Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run specific test
+pytest path/to/test_file.py::TestClass::test_method
+```
+
+### Frontend Tests
+
+```bash
+# Run unit tests
+npm test
+
+# Run end-to-end tests
+npm run test:e2e
+```
+
+## Deployment
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
 ## Features
 
 ### Frontend

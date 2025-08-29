@@ -29,11 +29,10 @@ urlpatterns = [
     path('auth/', include('apps.users.urls', namespace='users')),
     
     # App-specific API endpoints
-    # NOTE: include only existing urls modules; add others when available
-    # path('crops/', include('apps.crops.urls', namespace='crops')),
+    path('crops/', include('apps.crops.urls', namespace='crops')),
     # path('farmers/', include('apps.farmers.urls', namespace='farmers')),
-    path('prices/', include('apps.prices.api_urls', namespace='prices')),
-    path('yields/', include('apps.yields.api_urls', namespace='yields')),
-    path('recommendations/', include('apps.recommendations.api_urls', namespace='recommendations')),
-    path('reports/', include('apps.reports.api_urls', namespace='reports')),
+    path('prices/', include('apps.prices.urls', namespace='prices')),
+    path('yields/', include('apps.yields.urls', namespace='yields')),
+    path('recommendations/', include('apps.recommendations.urls', namespace='recommendations')),
+    # path('reports/', include('apps.reports.urls', namespace='reports')),
 ]

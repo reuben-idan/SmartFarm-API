@@ -15,16 +15,13 @@ env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
-APPS_DIR = BASE_DIR / 'apps'
+APPS_DIR = BASE_DIR / 'backend' / 'apps'
 
 # Add apps directory to Python path
 sys.path.append(str(APPS_DIR))
 
 # Initialize environment variables
 env = environ.Env()
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
 # Load environment variables from .env file
 env_file = os.path.join(BASE_DIR, '.env')
@@ -49,7 +46,6 @@ DJANGO_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.gis',
 ]
 
 THIRD_PARTY_APPS = [
@@ -58,18 +54,16 @@ THIRD_PARTY_APPS = [
     'drf_spectacular',
     'corsheaders',
     'django_filters',
-    'django_extensions',
 ]
 
 LOCAL_APPS = [
-    'core',
-    'users',
-    'crops',
-    'farmers',
-    'prices',
-    'recommendations',
-    'reports',
-    'yields',
+    'apps.core.apps.CoreConfig',
+    'apps.users.apps.UsersConfig',
+    'apps.crops.apps.CropsConfig',
+    'apps.farmers.apps.FarmersConfig',
+    'apps.prices.apps.PricesConfig',
+    'apps.recommendations.apps.RecommendationsConfig',
+    'apps.yields.apps.YieldsConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -208,13 +202,11 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 
 # Cache Configuration
+# Default cache; overridden in development to LocMem
 CACHES = {
     'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': env('REDIS_URL', default='redis://localhost:6379/1'),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'smartfarm-base',
     }
 }
 
@@ -231,30 +223,7 @@ if not DEBUG:
     X_FRAME_OPTIONS = 'DENY'
     SECURE_REFERRER_POLICY = 'same-origin'
 
-# Application definition
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    
-    # Third-party apps
-    'rest_framework',
-    'corsheaders',
-    'drf_spectacular',
-    
-    # Local apps
-    'apps.core.apps.CoreConfig',
-    'apps.users.apps.UsersConfig',
-    'apps.crops.apps.CropsConfig',
-    'apps.farmers.apps.FarmersConfig',
-    'apps.prices.apps.PricesConfig',
-    'apps.recommendations.apps.RecommendationsConfig',
-    'apps.reports.apps.ReportsConfig',
-    'apps.yields.apps.YieldsConfig',
-]
+# Remove duplicate secondary INSTALLED_APPS definition; using DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

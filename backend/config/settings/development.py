@@ -1,4 +1,4 @@
-""
+"""
 Development settings for SmartFarm API.
 
 - Debug mode enabled
@@ -13,15 +13,21 @@ import socket
 SECRET_KEY = 'django-insecure-development-key-change-in-production'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
-# Django Debug Toolbar Configuration
-INSTALLED_APPS += [
-    'debug_toolbar',
-    'django_extensions',
-]
+# Optionally enable debug tools if installed
+try:
+    import debug_toolbar  # type: ignore  # noqa: F401
+    INSTALLED_APPS += ['debug_toolbar']
+except Exception:
+    pass
+try:
+    import django_extensions  # type: ignore  # noqa: F401
+    INSTALLED_APPS += ['django_extensions']
+except Exception:
+    pass
 
 # Get internal IP for debug toolbar
 hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
@@ -43,6 +49,31 @@ DATABASES = {
     }
 }
 
+# Template configuration
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'backend', 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+# Disable SSL for development
+DATABASES['default']['OPTIONS'] = {}
+
+# Disable SSL for all databases
+for db in DATABASES.values():
+    if 'OPTIONS' in db and 'sslmode' in db['OPTIONS']:
+        del db['OPTIONS']['sslmode']
+
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -50,10 +81,27 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
+# Use in-memory cache in development to avoid django-redis requirement
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'smartfarm-dev'
+    }
+}
+
 # Django REST Framework Settings
-REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] += [
-    'rest_framework.authentication.SessionAuthentication',
-]
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',  
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+}
 
 # Logging Configuration
 LOGGING = {
@@ -89,9 +137,10 @@ SHELL_PLUS = 'ipython'
 SHELL_PLUS_PRINT_SQL = True
 SHELL_PLUS_PRINT_SQL_TRUNCATE = 1000
 
-# Django Debug Toolbar Middleware
-MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
-INTERNAL_IPS = ['127.0.0.1']
+# Django Debug Toolbar Middleware (only if app is enabled)
+if 'debug_toolbar' in INSTALLED_APPS:
+    MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
+    INTERNAL_IPS = ['127.0.0.1']
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -122,11 +171,10 @@ LOGGING = {
 }
 
 # REST Framework settings for development
-REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] += [
+REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] = REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] + (
     'rest_framework.authentication.SessionAuthentication',
-]
-
-# Disable browsable API in production
+    'rest_framework.authentication.BasicAuthentication',
+)
 REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = [
     'rest_framework.renderers.JSONRenderer',
     'rest_framework.renderers.BrowsableAPIRenderer',

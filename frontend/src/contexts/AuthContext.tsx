@@ -1,6 +1,13 @@
-import { createContext, useContext, ReactNode, useState, useEffect, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { authService } from '@/lib/api/auth.service';
+import {
+  createContext,
+  useContext,
+  ReactNode,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { authService } from "@/lib/api/auth.service";
 
 // Define the user type
 export interface User {
@@ -15,7 +22,13 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (data: { first_name: string; last_name: string; email: string; password: string; role: string }) => Promise<void>;
+  register: (data: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    password: string;
+    role: string;
+  }) => Promise<void>;
   logout: () => void;
   loading: boolean;
   error: string | null;
@@ -59,16 +72,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     setError(null);
     try {
-      const { access, refresh, user } = await authService.login({ email, password });
+      const { access, refresh, user } = await authService.login({
+        email,
+        password,
+      });
       authService.setTokens(access, refresh);
       authService.setAuthHeader(access);
       setUser(user as any);
-      
+
       // Redirect to the dashboard or the previous location
-      const from = location.state?.from?.pathname || '/';
+      const from = location.state?.from?.pathname || "/";
       navigate(from, { replace: true });
     } catch (err: any) {
-      setError(err?.message || 'Failed to log in. Please try again.');
+      setError(err?.message || "Failed to log in. Please try again.");
       throw err;
     } finally {
       setLoading(false);
@@ -76,7 +92,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Register function
-  const register = async (data: { first_name: string; last_name: string; email: string; password: string; role: string }) => {
+  const register = async (data: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    password: string;
+    role: string;
+  }) => {
     setLoading(true);
     setError(null);
     try {
@@ -87,7 +109,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         password2: data.password,
       } as any);
     } catch (err: any) {
-      setError(err?.message || 'Failed to register. Please try again.');
+      setError(err?.message || "Failed to register. Please try again.");
       throw err;
     } finally {
       setLoading(false);
@@ -98,7 +120,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     authService.logout();
     setUser(null);
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -122,7 +144,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

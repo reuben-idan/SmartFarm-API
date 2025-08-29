@@ -1,5 +1,4 @@
-""
-Core URL configuration for SmartFarm API.
+"""Core URL configuration for SmartFarm API.
 
 This module contains the main URL patterns for the project.
 """
@@ -30,7 +29,7 @@ urlpatterns = [
     # path('health/', include('health_check.urls')),
     
     # Frontend catch-all (served only if template exists; frontend dev uses Vite)
-    # path('', TemplateView.as_view(template_name='index.html'), name='home'),
+    path('', TemplateView.as_view(template_name='index.html'), name='home'),
 ]
 
 # Serve media files in development
@@ -38,7 +37,10 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     
     # Debug toolbar
-    import debug_toolbar
-    urlpatterns = [
-        path('__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns
+    try:
+        import debug_toolbar
+        urlpatterns = [
+            path('__debug__/', include(debug_toolbar.urls)),
+        ] + urlpatterns
+    except ImportError:
+        pass

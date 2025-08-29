@@ -1,0 +1,148 @@
+version: '3.8'
+
+services:
+  # Django Backend
+  backend:
+    build:
+      context: ./backend
+      target: production
+    image: smartfarm-backend:prod
+    restart: always
+    env_file: .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+      - PYTHONUNBUFFERED=1
+      - GUNICORN_CMD_ARGS=--workers=4 --worker-class=gthread --threads=2 --worker-tmp-dir /dev/shm
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    expose:
+      - 8000
+    networks:
+      - smartfarm-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # PostgreSQL Database
+  db:
+    image: postgres:13-alpine
+    restart: always
+    env_file: .env
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      - ./scripts/postgres/backup:/backups
+    networks:
+      - smartfarm-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis for Caching and Celery
+  redis:
+    image: redis:6-alpine
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - smartfarm-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Celery Worker
+  celery_worker:
+    image: smartfarm-backend:prod
+    restart: always
+    command: celery -A config worker --loglevel=info
+    env_file: .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - db
+      - redis
+    networks:
+      - smartfarm-network
+
+  # Celery Beat
+  celery_beat:
+    image: smartfarm-backend:prod
+    restart: always
+    command: celery -A config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    env_file: .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - db
+      - redis
+    networks:
+      - smartfarm-network
+
+  # Nginx
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      - ./certs:/etc/letsencrypt
+      - ./certs/www:/var/www/certbot
+    depends_on:
+      - backend
+    networks:
+      - smartfarm-network
+
+  # Certbot for SSL Certificates
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certs:/etc/letsencrypt
+      - ./certs/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - smartfarm-network
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      target: production
+    image: smartfarm-frontend:prod
+    restart: always
+    networks:
+      - smartfarm-network
+
+# Volumes
+volumes:
+  postgres_data:
+  redis_data:
+  static_volume:
+  media_volume:
+
+# Networks
+networks:
+  smartfarm-network:
+    driver: bridge
