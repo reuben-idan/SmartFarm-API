@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Tester</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .endpoint { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 8px 15px; margin: 5px 0; cursor: pointer; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>SmartFarm API Tester</h1>
+    
+    <div class="endpoint">
+        <h2>1. Test API Root</h2>
+        <button onclick="testEndpoint('/', 'GET')">Test API Root</button>
+        <div id="rootResult"></div>
+    </div>
+
+    <div class="endpoint">
+        <h2>2. Test Registration</h2>
+        <button onclick="testRegistration()">Test Registration</button>
+        <div id="registerResult"></div>
+    </div>
+
+    <div class="endpoint">
+        <h2>3. Test Login</h2>
+        <div>
+            <div style="margin: 10px 0;">
+                <label>Email: <input type="text" id="email" value="admin@example.com" style="width: 200px;"></label><br>
+                <label>Password: <input type="password" id="password" value="adminpass" style="width: 180px;"></label>
+            </div>
+            <button onclick="testLogin()">Test Login</button>
+            <div id="loginResult"></div>
+        </div>
+    </div>
+
+    <div class="endpoint">
+        <h2>4. Test Current User</h2>
+        <button onclick="testCurrentUser()">Get Current User</button>
+        <div id="userResult"></div>
+    </div>
+
+    <script>
+        // Try different base URLs if localhost doesn't work
+        const API_BASE = 'http://127.0.0.1:8000/api';  // Using 127.0.0.1 instead of localhost
+        let accessToken = localStorage.getItem('accessToken');
+        let refreshToken = localStorage.getItem('refreshToken');
+
+        function showResult(elementId, success, data) {
+            const resultDiv = document.getElementById(elementId);
+            resultDiv.className = success ? 'success' : 'error';
+            
+            // Show more detailed error information
+            let displayData = data;
+            if (!success && data && data.error) {
+                displayData = {
+                    error: data.error,
+                    status: data.status,
+                    statusText: data.statusText,
+                    ...(data.data && { responseData: data.data })
+                };
+            }
+            
+            resultDiv.innerHTML = `<pre>${JSON.stringify(displayData, null, 2)}</pre>`;
+            
+            // Always log to console for debugging
+            console.log(`Result for ${elementId}:`, data);
+        }
+
+        async function testEndpoint(endpoint, method = 'GET', body = null) {
+            const url = `${API_BASE}${endpoint}`;
+            const options = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                mode: 'cors',
+                credentials: 'include'
+            };
+            
+            // Log the request details
+            console.log(`\n=== Making ${method} request to ${url} ===`);
+            console.log('Headers:', JSON.stringify(options.headers, null, 2));
+            if (body) {
+                console.log('Request Body:', JSON.stringify(body, null, 2));
+            }
+
+            if (accessToken) {
+                options.headers['Authorization'] = `Bearer ${accessToken}`;
+            }
+
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+
+            try {
+                console.log(`Attempting to fetch: ${url}`);
+                const startTime = Date.now();
+                const response = await fetch(url, options).catch(err => {
+                    console.error('Fetch error details:', {
+                        name: err.name,
+                        message: err.message,
+                        stack: err.stack
+                    });
+                    throw err;
+                });
+                console.log(`Request completed in ${Date.now() - startTime}ms`);
+                console.log('Response Status:', response.status, response.statusText);
+                console.log('Response Headers:');
+                response.headers.forEach((value, key) => console.log(`  ${key}: ${value}`));
+                
+                let data;
+                try {
+                    data = await response.json();
+                    console.log('Response Body:', JSON.stringify(data, null, 2));
+                } catch (e) {
+                    console.log('No JSON response body');
+                    data = await response.text().catch(() => ({}));
+                }
+                
+                if (!response.ok) {
+                    console.error('Request failed:', response.status, response.statusText);
+                    return { 
+                        success: false, 
+                        status: response.status, 
+                        statusText: response.statusText,
+                        data,
+                        headers: Object.fromEntries(response.headers.entries())
+                    };
+                }
+                
+                return { 
+                    success: true, 
+                    status: response.status,
+                    statusText: response.statusText,
+                    data,
+                    headers: Object.fromEntries(response.headers.entries())
+                };
+            } catch (error) {
+                console.error('Request error details:', {
+                    name: error.name,
+                    message: error.message,
+                    stack: error.stack,
+                    type: typeof error
+                });
+                return { 
+                    success: false, 
+                    error: `Network Error: ${error.message}`,
+                    details: {
+                        type: error.name,
+                        stack: error.stack
+                    }
+                };
+            }
+        }
+
+        async function testRegistration() {
+            const testEmail = `test_${Date.now()}@example.com`;
+            const result = await testEndpoint('/auth/register/', 'POST', {
+                email: testEmail,
+                password1: 'TestPass123!',
+                password2: 'TestPass123!',
+                first_name: 'Test',
+                last_name: 'User'
+            });
+            
+            showResult('registerResult', result.success, result.data || result.error);
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const result = await testEndpoint('/auth/login/', 'POST', {
+                email,
+                password
+            });
+            
+            if (result.success && result.data.access) {
+                accessToken = result.data.access;
+                refreshToken = result.data.refresh;
+                localStorage.setItem('accessToken', accessToken);
+                localStorage.setItem('refreshToken', refreshToken);
+            }
+            
+            showResult('loginResult', result.success, result.data || result.error);
+        }
+
+        async function testCurrentUser() {
+            if (!accessToken) {
+                showResult('userResult', false, 'No access token available. Please login first.');
+                return;
+            }
+            
+            // Log the token for debugging
+            console.log('Using access token:', accessToken);
+            
+            const result = await testEndpoint('/auth/me/', 'GET');
+            showResult('userResult', result.success, result.data || result.error);
+        }
+
+        // Test API root on page load
+        window.onload = async () => {
+            const result = await testEndpoint('/');
+            showResult('rootResult', result.success, result.data || result.error);
+        };
+    </script>
+</body>
+</html>
