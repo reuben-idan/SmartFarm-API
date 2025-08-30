@@ -4,6 +4,13 @@ WSGI config for SmartFarm API.
 It exposes the WSGI callable as a module-level variable named 'application'.
 """
 import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, project_root)
+
+# Now import the app
 from backend.app.main import app
 
 application = app

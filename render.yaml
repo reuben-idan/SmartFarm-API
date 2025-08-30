@@ -3,8 +3,8 @@ services:
     name: smartfarm-api
     env: python
     region: frankfurt
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn wsgi:application --bind 0.0.0.0:$PORT --workers 4 --worker-class uvicorn.workers.UvicornWorker
+    buildCommand: pip install -e .
+    startCommand: gunicorn wsgi:application --bind 0.0.0.0:$PORT --workers 4 --worker-class uvicorn.workers.UvicornWorker --pythonpath /opt/render/project/src
     envVars:
       - key: PYTHON_VERSION
         value: 3.13.4
