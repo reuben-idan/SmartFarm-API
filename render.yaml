@@ -7,10 +7,10 @@ services:
       pip install -r requirements.txt
       pip install -e .
       export PYTHONPATH=$PYTHONPATH:/opt/render/project/src
-    startCommand: gunicorn -w 4 -k uvicorn.workers.UvicornWorker wsgi:application --chdir /opt/render/project/src
+    startCommand: gunicorn -w 4 -k uvicorn.workers.UvicornWorker backend.app.main:app
     envVars:
       - key: PYTHON_VERSION
-        value: 3.13.4
+        value: 3.11.0
       - key: PORT
         value: 10000
       - key: PYTHONUNBUFFERED
