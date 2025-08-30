@@ -62,8 +62,13 @@ class UserProfileSerializer(BaseModelSerializer):
     
     class Meta(BaseModelSerializer.Meta):
         model = User.profile.related.related_model  # Get the UserProfile model
-        fields = '__all__'
-        read_only_fields = ['user', 'created_at', 'updated_at']
+        fields = [
+            'id', 'user', 'bio', 'gender', 'date_of_birth', 'address', 
+            'city', 'state', 'country', 'postal_code', 'profile_picture',
+            'website', 'twitter', 'facebook', 'linkedin', 'receive_newsletter',
+            'email_notifications', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['user']
 
 class ChangePasswordSerializer(serializers.Serializer):
     """Serializer for password change endpoint."""

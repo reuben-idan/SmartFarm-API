@@ -1,12 +1,11 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@/components/theme-provider';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { DashboardPage } from '@/pages/dashboard';
-import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { WebSocketProvider } from '@/contexts/WebSocketContext';
 import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
-import { QueryProvider } from '@/providers/QueryProvider';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Toaster } from 'sonner';
 
@@ -39,31 +38,28 @@ const GlobalErrorFallback = () => (
 export function App() {
   return (
     <ErrorBoundary fallback={<GlobalErrorFallback />}>
-      <QueryProvider>
-        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-          <AuthProvider>
-            <WebSocketProvider>
-              <Toaster position="top-right" richColors />
-              <Router>
-                <Routes>
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/register" element={<RegisterPage />} />
-                  <Route
-                    path="/"
-                    element={
-                      <ProtectedRoute>
-                        <DashboardLayout>
-                          <DashboardPage />
-                        </DashboardLayout>
-                      </ProtectedRoute>
-                    }
-                  />
-                </Routes>
-              </Router>
-            </WebSocketProvider>
-          </AuthProvider>
-        </ThemeProvider>
-      </QueryProvider>
+      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+        <WebSocketProvider>
+          <Toaster position="top-right" richColors />
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route
+              path="/*"
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <Routes>
+                      <Route path="/" element={<DashboardPage />} />
+                      {/* Add more protected routes here */}
+                    </Routes>
+                  </DashboardLayout>
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </WebSocketProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }

@@ -28,7 +28,7 @@ urlpatterns = [
     # Include ViewSet URLs
     path('', include(router.urls)),
     
-    # Authentication URLs
+    # Authentication URLs - include at the root level
     path('auth/', include((auth_patterns, 'authentication'))),
     
     # User Profile
