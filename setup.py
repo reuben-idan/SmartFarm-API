@@ -3,7 +3,9 @@ from setuptools import setup, find_packages
 setup(
     name="smartfarm_api",
     version="0.1",
-    packages=find_packages(),
+    packages=find_packages(where='.'),
+    package_dir={"": "."},
+    include_package_data=True,
     install_requires=[
         'fastapi>=0.68.0',
         'uvicorn[standard]>=0.15.0',
@@ -16,4 +18,5 @@ setup(
         'websockets>=10.0',
         'python-dateutil>=2.8.2'
     ],
+    python_requires='>=3.8',
 )
