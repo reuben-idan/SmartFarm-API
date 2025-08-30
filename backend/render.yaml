@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: smartfarm-api
+    env: python
+    region: frankfurt  # or choose a region closer to your users
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: PORT
+        value: 10000
+      - key: PYTHONUNBUFFERED
+        value: 1
+      # Add other environment variables from your .env file here
+      # - key: DATABASE_URL
+      #   sync: false  # Will be set in the Render dashboard
+    plan: free  # or 'starter' or 'standard' for production
