@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "smartfarm-api"
+version = "0.1.0"
+description = "SmartFarm API Backend"
+authors = ["Your Name <your.email@example.com>"]
+readme = "README.md"
+packages = [{include = "backend"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Django = "^4.2"
+djangorestframework = "^3.14.0"
+django-cors-headers = "^4.3.0"
+psycopg2-binary = "^2.9.7"
+python-dotenv = "^1.0.0"
+gunicorn = "^21.2.0"
+whitenoise = "^6.6.0"
+django-environ = "^0.11.2"
+djangorestframework-simplejwt = "^5.3.0"
+drf-spectacular = "^0.26.2"
+django-filter = "^23.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

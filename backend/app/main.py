@@ -1,10 +1,22 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 import uuid
+import os
 
-from app.websockets.main import websocket_endpoint, manager
+app = FastAPI(
+    title="SmartFarm API",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
 
-app = FastAPI(title="SmartFarm API", version="1.0.0")
+# Import WebSocket components only if they exist
+try:
+    from app.websockets.main import websocket_endpoint, manager
+    HAS_WEBSOCKETS = True
+except ImportError:
+    HAS_WEBSOCKETS = False
+    print("WebSocket components not found. WebSocket functionality will be disabled.")
 
 # CORS middleware configuration
 app.add_middleware(
@@ -27,11 +39,21 @@ async def websocket_route(websocket: WebSocket, client_id: str):
 @app.on_event("startup")
 async def startup():
     """Startup event handler"""
-    print("Starting WebSocket metrics broadcast")
-    await manager.start_metrics_broadcast()
+    if HAS_WEBSOCKETS:
+        print("Starting WebSocket metrics broadcast")
+        await manager.start_metrics_broadcast()
+    else:
+        print("WebSocket manager not available. Skipping WebSocket initialization.")
 
 @app.on_event("shutdown")
 async def shutdown():
     """Shutdown event handler"""
-    print("Stopping WebSocket metrics broadcast")
-    await manager.stop_metrics_broadcast()
+    if HAS_WEBSOCKETS:
+        print("Stopping WebSocket metrics broadcast")
+        await manager.stop_metrics_broadcast()
+
+# This block ensures the app can be run with `python -m app.main`
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("app.main:app", host="0.0.0.0", port=port, reload=False)
