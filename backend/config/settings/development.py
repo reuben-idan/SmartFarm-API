@@ -1,33 +1,64 @@
 """
 Development settings for SmartFarm API.
-
-- Debug mode enabled
-- Local database
-- Detailed error pages
 """
 
 from .base import *
+import os
 import socket
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# SECURITY WARNING: keep the secret key used in development secret!
 SECRET_KEY = 'django-insecure-development-key-change-in-production'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-# Optionally enable debug tools if installed
+# Database
+# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+
+# Debug toolbar (optional)
 try:
-    import debug_toolbar  # type: ignore  # noqa: F401
+    import debug_toolbar
     INSTALLED_APPS += ['debug_toolbar']
-except Exception:
+    MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
+    INTERNAL_IPS = ['127.0.0.1']
+except ImportError:
     pass
-try:
-    import django_extensions  # type: ignore  # noqa: F401
-    INSTALLED_APPS += ['django_extensions']
-except Exception:
-    pass
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+# DRF settings
+REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] = (
+    'rest_framework_simplejwt.authentication.JWTAuthentication',
+    'rest_framework.authentication.SessionAuthentication',
+)
+
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
 
 # Get internal IP for debug toolbar
 hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
@@ -80,7 +111,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # CORS Settings
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Your frontend URL
+    "http://127.0.0.1:3000",
+]
 # Use in-memory cache in development to avoid django-redis requirement
 CACHES = {
     'default': {

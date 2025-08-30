@@ -1,177 +1,181 @@
-import { useAuth } from '../../lib/auth/AuthContext';
-import { Button } from '../../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { BarChart, PieChart, LineChart } from 'lucide-react';
+import { useAuth } from '@/lib/auth/AuthContext';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Activity, Droplets, Sun, Thermometer } from 'lucide-react';
+import { Bar } from 'react-chartjs-2';
+import { 
+  Chart as ChartJS, 
+  CategoryScale, 
+  LinearScale, 
+  BarElement, 
+  Title, 
+  Tooltip, 
+  Legend,
+  ChartData,
+  ChartOptions
+} from 'chart.js';
+import { useRealtimeData } from '@/hooks/useRealtimeData';
+import { DashboardMetrics, CropYield } from '@/types/dashboard';
+
+// Register ChartJS components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+// Default metrics
+const defaultMetrics: DashboardMetrics = {
+  temperature: 0,
+  humidity: 0,
+  soilMoisture: 0,
+  lightIntensity: 0
+};
+
+// Default crop yields
+const defaultCropYields: CropYield[] = [];
+
+// Chart options
+const chartOptions: ChartOptions<'bar'> = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top' as const,
+    },
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+    },
+  },
+};
 
 export const DashboardPage = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  
+  // Real-time data hooks with proper defaults
+  const { data: metrics = defaultMetrics, isLoading: isLoadingMetrics } = 
+    useRealtimeData<DashboardMetrics>('metrics', defaultMetrics);
+  
+  const { data: cropYields = defaultCropYields, isLoading: isLoadingYields } = 
+    useRealtimeData<CropYield[]>('cropYields', defaultCropYields);
+  
+  const isLoading = isLoadingMetrics || isLoadingYields;
 
-  // Mock data for the dashboard
+  // Stats cards data
   const stats = [
-    { name: 'Total Farmers', value: '1,234', change: '+12%', changeType: 'increase' },
-    { name: 'Active Crops', value: '256', change: '+4%', changeType: 'increase' },
-    { name: 'Market Prices', value: '24', change: '+2.5%', changeType: 'increase' },
-    { name: 'Alerts', value: '5', change: '0%', changeType: 'neutral' },
+    { 
+      id: 'temperature', 
+      name: 'Temperature', 
+      value: `${metrics?.temperature || 0}°C`, 
+      icon: <Thermometer className="h-5 w-5 text-blue-500" />,
+      trend: (metrics?.temperature || 0) > 25 ? 'high' : 'normal' as const
+    },
+    { 
+      id: 'humidity', 
+      name: 'Humidity', 
+      value: `${metrics?.humidity || 0}%`, 
+      icon: <Droplets className="h-5 w-5 text-cyan-500" />,
+      trend: (metrics?.humidity || 0) > 70 ? 'high' as const : 'normal' as const
+    },
+    { 
+      id: 'soil', 
+      name: 'Soil Moisture', 
+      value: `${metrics?.soilMoisture || 0}%`, 
+      icon: <Activity className="h-5 w-5 text-emerald-500" />,
+      trend: (metrics?.soilMoisture || 0) < 30 ? 'low' as const : 'normal' as const
+    },
+    { 
+      id: 'light', 
+      name: 'Light Intensity', 
+      value: `${metrics?.lightIntensity || 0} lux`, 
+      icon: <Sun className="h-5 w-5 text-amber-500" />,
+      trend: (metrics?.lightIntensity || 0) > 10000 ? 'high' as const : 'normal' as const
+    },
   ];
 
-  const recentActivities = [
-    { id: 1, user: 'John Doe', action: 'added a new crop', time: '5 min ago' },
-    { id: 2, user: 'Jane Smith', action: 'updated market prices', time: '1 hour ago' },
-    { id: 3, user: 'Robert Johnson', action: 'submitted a support ticket', time: '3 hours ago' },
-    { id: 4, user: 'Emily Davis', action: 'completed soil analysis', time: '5 hours ago' },
-  ];
+  // Prepare chart data
+  const chartData: ChartData<'bar'> = {
+    labels: cropYields?.map(crop => crop.crop) || [],
+    datasets: [
+      {
+        label: 'Yield (tons/hectare)',
+        data: cropYields?.map(crop => crop.yieldValue) || [],
+        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+        borderColor: 'rgba(59, 130, 246, 1)',
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  // Get user's full name
+  const userName = user?.first_name && user?.last_name 
+    ? `${user.first_name} ${user.last_name}`
+    : user?.email || 'User';
+
+  if (isLoading) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i} className="p-6">
+              <div className="h-4 bg-gray-200 rounded w-3/4 mb-4 animate-pulse"></div>
+              <div className="h-8 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+            </Card>
+          ))}
+        </div>
+        <div className="h-96 bg-gray-100 rounded-lg animate-pulse"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col space-y-6 p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Welcome back, {user?.first_name || 'User'}! Here's what's happening with your farm.
-          </p>
-        </div>
-        <div className="flex items-center space-x-4">
-          <Button variant="outline" onClick={() => logout()}>
-            Logout
-          </Button>
-        </div>
+    <div className="p-6 space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Welcome back, {userName}</h1>
+        <p className="text-muted-foreground">Here's what's happening with your farm today</p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
-          <Card key={stat.name}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.name}</CardTitle>
-              <div className="h-4 w-4 text-muted-foreground">
-                <BarChart className="h-4 w-4" />
+          <Card key={stat.id} className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">{stat.name}</p>
+                <h3 className="text-2xl font-bold">{stat.value}</h3>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">
-                {stat.change} from last month
+              <div className="p-3 rounded-lg bg-primary/10">
+                {stat.icon}
+              </div>
+            </div>
+            {stat.trend !== 'normal' && (
+              <p className={`text-xs mt-2 ${stat.trend === 'high' ? 'text-red-500' : 'text-yellow-500'}`}>
+                {stat.trend === 'high' ? 'High' : 'Low'} {stat.trend === 'high' ? '⚠️' : '⚠️'}
               </p>
-            </CardContent>
+            )}
           </Card>
         ))}
       </div>
 
-      {/* Main Content */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        {/* Yield Chart */}
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>Crop Yield Overview</CardTitle>
-            <CardDescription>Monthly crop yield for the past year</CardDescription>
-          </CardHeader>
-          <CardContent className="pl-2">
-            <div className="h-[300px] flex items-center justify-center bg-muted/50 rounded-md">
-              <div className="text-center p-6">
-                <LineChart className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
-                <p className="text-sm text-muted-foreground">Crop yield chart will be displayed here</p>
-              </div>
+      {/* Main Chart */}
+      <Card className="p-6">
+        <CardHeader className="p-0 pb-6">
+          <CardTitle>Crop Yields</CardTitle>
+          <CardDescription>Current yield metrics across different crops</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {cropYields?.length ? (
+            <Bar options={chartOptions} data={chartData} />
+          ) : (
+            <div className="h-64 flex items-center justify-center text-muted-foreground">
+              No yield data available
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Right Sidebar */}
-        <div className="col-span-3 space-y-4">
-          {/* Crop Distribution */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Crop Distribution</CardTitle>
-              <CardDescription>Current crop distribution by area</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[200px] flex items-center justify-center bg-muted/50 rounded-md">
-                <div className="text-center p-6">
-                  <PieChart className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">Crop distribution chart will be displayed here</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Recent Activity */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>Latest activities in your farm</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {recentActivities.map((activity) => (
-                  <div key={activity.id} className="flex items-start space-x-4">
-                    <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
-                      <span className="text-sm font-medium">
-                        {activity.user.split(' ').map(n => n[0]).join('')}
-                      </span>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium leading-none">{activity.user}</p>
-                      <p className="text-sm text-muted-foreground">{activity.action}</p>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{activity.time}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-primary/5">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Add New Crop</CardTitle>
-            <CardDescription>Record a new crop planting</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" className="w-full">
-              Add Crop
-            </Button>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-primary/5">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Record Harvest</CardTitle>
-            <CardDescription>Log your latest harvest</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" className="w-full">
-              Record Harvest
-            </Button>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-primary/5">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Check Weather</CardTitle>
-            <CardDescription>View weather forecast</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" className="w-full">
-              View Forecast
-            </Button>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-primary/5">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Get Support</CardTitle>
-            <CardDescription>Contact our support team</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" className="w-full">
-              Contact Support
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

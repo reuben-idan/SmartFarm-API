@@ -1,0 +1,34 @@
+2025-08-29 21:59:33,709 - __main__ - INFO - Project root: C:\Users\reube\SmartFarm-API
+2025-08-29 21:59:33,709 - __main__ - INFO - Backend dir: C:\Users\reube\SmartFarm-API\backend
+2025-08-29 21:59:33,711 - __main__ - INFO - Python path:
+2025-08-29 21:59:33,711 - __main__ - INFO -   - C:\Users\reube\SmartFarm-API\backend
+2025-08-29 21:59:33,711 - __main__ - INFO -   - C:\Users\reube\SmartFarm-API
+2025-08-29 21:59:33,712 - __main__ - INFO -   - C:\Python312\python312.zip
+2025-08-29 21:59:33,712 - __main__ - INFO -   - C:\Python312\DLLs
+2025-08-29 21:59:33,712 - __main__ - INFO -   - C:\Python312\Lib
+2025-08-29 21:59:33,712 - __main__ - INFO -   - C:\Python312
+2025-08-29 21:59:33,713 - __main__ - INFO -   - C:\Users\reube\AppData\Roaming\Python\Python312\site-packages
+2025-08-29 21:59:33,713 - __main__ - INFO -   - C:\Python312\Lib\site-packages
+2025-08-29 21:59:33,713 - __main__ - INFO - DJANGO_SETTINGS_MODULE: config.settings.test
+2025-08-29 21:59:33,756 - __main__ - INFO - Django version: 5.0
+2025-08-29 21:59:34,319 - environ.environ - DEBUG - Read environment variables from: C:\Users\reube\SmartFarm-API\.env
+2025-08-29 21:59:34,863 - environ.environ - DEBUG - get 'SECRET_KEY' casted as 'None' with default 'django-insecure-default-key-for-development-only'
+2025-08-29 21:59:34,864 - environ.environ - DEBUG - get 'DEBUG' casted as '<class 'bool'>' with default 'True'
+2025-08-29 21:59:34,864 - environ.environ - DEBUG - get 'ALLOWED_HOSTS' casted as '<class 'list'>' with default '['localhost', '127.0.0.1']'
+2025-08-29 21:59:34,866 - environ.environ - DEBUG - get 'DATABASE_URL' casted as 'None' with default 'postgres://postgres:postgres@localhost:5432/smartfarm'
+2025-08-29 21:59:34,866 - environ.environ - DEBUG - get 'CORS_ALLOWED_ORIGINS' casted as '<class 'list'>' with default '[]'
+2025-08-29 21:59:34,867 - environ.environ - DEBUG - get 'EMAIL_HOST' casted as 'None' with default 'smtp.gmail.com'
+2025-08-29 21:59:34,867 - environ.environ - DEBUG - get 'EMAIL_PORT' casted as '<class 'int'>' with default '587'
+2025-08-29 21:59:34,868 - environ.environ - DEBUG - get 'EMAIL_USE_TLS' casted as '<class 'bool'>' with default 'True'
+2025-08-29 21:59:34,868 - environ.environ - DEBUG - get 'EMAIL_HOST_USER' casted as 'None' with default ''
+2025-08-29 21:59:34,869 - environ.environ - DEBUG - get 'EMAIL_HOST_PASSWORD' casted as 'None' with default ''
+2025-08-29 21:59:34,869 - environ.environ - DEBUG - get 'DEFAULT_FROM_EMAIL' casted as 'None' with default 'noreply@smartfarm.com'
+2025-08-29 21:59:34,869 - environ.environ - DEBUG - get 'CELERY_BROKER_URL' casted as 'None' with default 'redis://localhost:6379/0'
+2025-08-29 21:59:34,870 - environ.environ - DEBUG - get 'CELERY_RESULT_BACKEND' casted as 'None' with default 'redis://localhost:6379/0'
+2025-08-29 21:59:34,870 - environ.environ - DEBUG - get 'DB_NAME' casted as 'None' with default 'smartfarm'
+2025-08-29 21:59:34,870 - environ.environ - DEBUG - get 'DB_USER' casted as 'None' with default 'postgres'
+2025-08-29 21:59:34,870 - environ.environ - DEBUG - get 'DB_PASSWORD' casted as 'None' with default 'postgres'
+2025-08-29 21:59:34,871 - environ.environ - DEBUG - get 'DB_HOST' casted as 'None' with default 'localhost'
+2025-08-29 21:59:34,871 - environ.environ - DEBUG - get 'DB_PORT' casted as 'None' with default '5432'
+2025-08-29 21:59:34,871 - environ.environ - DEBUG - get 'CORS_ALLOWED_ORIGINS' casted as '<class 'list'>' with default '[]'
+2025-08-29 21:59:34,933 - __main__ - INFO - Using settings: config.settings.test
