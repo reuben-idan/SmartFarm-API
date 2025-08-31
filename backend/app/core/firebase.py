@@ -29,7 +29,6 @@ def get_firebase_credentials():
     
     # Fallback to service account key file if environment variables are not set
     from pathlib import Path
-    import os
     
     BASE_DIR = Path(__file__).resolve().parent.parent.parent
     service_account_key_path = os.path.join(BASE_DIR, 'backend', 'serviceAccountKey.json')
