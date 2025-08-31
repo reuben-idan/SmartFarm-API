@@ -1,12 +1,37 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  define: {
-    'import.meta.env.VITE_WS_URL': JSON.stringify(process.env.VITE_WS_URL || 'ws://localhost:8000')
-  },
+export default defineConfig(({ mode }) => {
+  // Load env file based on `mode` in the current directory.
+  const env = loadEnv(mode, process.cwd(), '');
+  
+  return {
+    base: '/',
+    define: {
+      'import.meta.env.VITE_WS_URL': JSON.stringify(env.VITE_WS_URL || 'ws://localhost:8000')
+    },
+    build: {
+      outDir: 'dist',
+      assetsDir: 'assets',
+      emptyOutDir: true,
+      sourcemap: true,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            react: ['react', 'react-dom', 'react-router-dom'],
+            vendor: ['@tanstack/react-query', 'zod', 'date-fns'],
+            ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-slot'],
+            charts: ['recharts'],
+          },
+          chunkFileNames: 'assets/[name]-[hash].js',
+          entryFileNames: 'assets/[name]-[hash].js',
+          assetFileNames: 'assets/[name]-[hash][extname]',
+        }
+      },
+      chunkSizeWarningLimit: 1000, // Increase chunk size warning limit to 1000KB
+    },
   plugins: [react()],
   server: {
     port: 3000,
@@ -17,7 +42,7 @@ export default defineConfig({
     alias: [
       {
         find: '@',
-        replacement: path.resolve(__dirname, 'src')
+        replacement: path.resolve(__dirname, './src')
       },
       {
         find: '@lib',
@@ -41,27 +66,6 @@ export default defineConfig({
       }
     ],
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json']
-  },
-  build: {
-    outDir: 'dist',
-    assetsDir: 'assets',
-    emptyOutDir: true,
-    sourcemap: true,
-    rollupOptions: {
-      external: ['react', 'react-dom'],
-      output: {
-        manualChunks: {
-          react: ['react', 'react-dom', 'react-router-dom'],
-          vendor: ['@tanstack/react-query', 'zod', 'date-fns'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-slot'],
-          charts: ['recharts'],
-        },
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash][extname]',
-      }
-    },
-    chunkSizeWarningLimit: 1000, // Increase chunk size warning limit to 1000KB
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom']
