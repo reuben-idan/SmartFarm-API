@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom"
 import { Sidebar } from "./sidebar"
 import { TopNav } from "./top-nav-new"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/contexts/AuthContext"
 
 interface DashboardLayoutProps {
   children?: ReactNode;
@@ -11,6 +12,7 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const { user } = useAuth()
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -55,6 +57,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="flex-1 flex flex-col md:pl-64">
         {/* Top navigation */}
         <TopNav 
+          user={{
+            name: user?.first_name && user?.last_name 
+              ? `${user.first_name} ${user.last_name}` 
+              : user?.email || 'User',
+            email: user?.email,
+            image: user?.image
+          }}
           onMenuClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className={cn(
             "sticky top-0 z-30 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",

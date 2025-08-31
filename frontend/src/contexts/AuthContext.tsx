@@ -18,10 +18,19 @@ export interface User {
   last_name: string;
   role: string;
   token?: string;
+  image?: string;
 }
 
-interface AuthResponse {
-  user: User;
+// Define the response type from the auth service
+interface AuthServiceResponse {
+  user: {
+    id: number;
+    email: string;
+    first_name?: string;
+    last_name?: string;
+    role: string;
+    image?: string;
+  };
   token: string;
 }
 
@@ -117,13 +126,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await authService.login(email, password) as AuthResponse;
-        setUser(response.user);
-        localStorage.setItem("token", response.token);
-        toast.success("Successfully logged in");
-        navigate(location.state?.from?.pathname || "/dashboard", {
-          replace: true,
-        });
+        const response = await authService.login({ email, password });
+        
+        // Update user state with the response data
+        const userData: User = {
+          id: response.user.id,
+          email: response.user.email,
+          first_name: response.user.first_name || '',
+          last_name: response.user.last_name || '',
+          role: response.user.role || 'user',
+          image: response.user.image,
+          token: response.token
+        };
+        
+        setUser(userData);
+        localStorage.setItem('token', response.token);
+        
+        toast.success('Successfully logged in');
+        
+        // Redirect to dashboard or previous page
+        const from = location.state?.from?.pathname || '/dashboard';
+        navigate(from, { replace: true });
       } catch (err: any) {
         const errorMessage = err.response?.data?.message || "Invalid email or password";
         setError(errorMessage);
@@ -196,10 +219,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Logout function
-  const logout = () => {
-    authService.logout();
-    setUser(null);
-    navigate("/login");
+  const logout = useCallback(() => {
+    try {
+      // Clear any stored tokens or user data
+      localStorage.removeItem('token');
+      
+      // Clear the current user state
+      setUser(null);
+      
+      // Clear any auth headers if they exist
+      if (authService.clearAuthHeader) {
+        authService.clearAuthHeader();
+      }
+      
+      // Call the auth service logout if it exists
+      if (authService.logout) {
+        authService.logout();
+      }
+      
+      // Show success message
+      toast.success('Successfully logged out');
+      
+      // Redirect to login page
+      navigate('/login', { replace: true });
+    } catch (error) {
+      console.error('Error during logout:', error);
+      toast.error('An error occurred during logout');
+      // Still ensure we redirect even if there's an error
+      navigate('/login', { replace: true });
+    }
+  }, [navigate]); // Add navigate to the dependency array
   };
 
   return (
@@ -210,13 +259,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         loginWithGoogle,
         loginWithGithub,
         register,
+        updateProfile,
+        refreshUser,
         logout,
         loading,
         error,
         isAuthenticated: !!user,
       }}
     >
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
