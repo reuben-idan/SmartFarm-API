@@ -37,12 +37,12 @@ async def get_current_admin_user(
 ) -> dict:
     """
     Dependency that checks if the current user is an admin.
-    You'll need to implement your own admin check logic here.
+    This verifies the user has admin role in their token claims.
     """
-    # Example: Check if the user has an 'admin' claim in their token
+    # Check if user has admin role in their token claims
     if not current_user.get('admin', False):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not enough permissions",
+            detail="Insufficient permissions to access this resource",
         )
     return current_user
