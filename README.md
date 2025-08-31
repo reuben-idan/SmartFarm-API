@@ -48,7 +48,7 @@ A secure, scalable agricultural management platform built with modern web techno
 
 ### Backend
 - **Framework**: FastAPI 0.109.0+
-- **Database**: PostgreSQL 13+
+- **Database**: SQLITE
 - **Cache**: Redis 6+
 - **Authentication**: JWT, OAuth2
 - **API Documentation**: OpenAPI/Swagger
