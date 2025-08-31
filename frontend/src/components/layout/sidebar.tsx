@@ -1,6 +1,6 @@
 import * as React from "react"
 import { NavLink, useLocation } from "react-router-dom"
-import { cn } from "@/utils"
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { X, Menu, LayoutDashboard, Users, Sprout, Truck, LineChart as LineChartIcon, Lightbulb, BarChart2, HelpCircle, FileText, Settings } from "lucide-react"

@@ -1,21 +1,37 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@/components/theme-provider';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
-import { DashboardPage } from '@/pages/dashboard';
-import { useAuth } from '@/contexts/AuthContext';
+import DashboardPage from '@/pages/dashboard/dashboard';
+import { useFirebaseAuth, FirebaseAuthProvider } from '@/contexts/FirebaseAuthContext';
+import { UserProfileProvider } from '@/contexts/UserProfileContext';
 import { WebSocketProvider } from '@/contexts/WebSocketContext';
 import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Toaster } from 'sonner';
+import { SettingsLayout } from '@/pages/settings/SettingsLayout';
+import ProfileSettings from '@/pages/settings/ProfileSettingsPage';
+import SecuritySettings from '@/pages/settings/SecuritySettings';
+import NotificationsSettings from '@/pages/settings/NotificationsSettings';
+import AppearanceSettings from '@/pages/settings/AppearanceSettings';
+import LanguageSettings from '@/pages/settings/LanguageSettings';
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading } = useFirebaseAuth();
   const location = useLocation();
-  if (loading) return null;
+  
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      </div>
+    );
+  }
+  
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
+  
   return children;
 }
 
@@ -39,26 +55,36 @@ export function App() {
   return (
     <ErrorBoundary fallback={<GlobalErrorFallback />}>
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-        <WebSocketProvider>
-          <Toaster position="top-right" richColors />
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route
-              path="/*"
-              element={
-                <ProtectedRoute>
-                  <DashboardLayout>
-                    <Routes>
-                      <Route path="/" element={<DashboardPage />} />
-                      {/* Add more protected routes here */}
-                    </Routes>
-                  </DashboardLayout>
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </WebSocketProvider>
+        <FirebaseAuthProvider>
+          <UserProfileProvider>
+            <WebSocketProvider>
+              <Toaster position="top-right" />
+              <Routes>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route
+                  path="/"
+                  element={
+                    <ProtectedRoute>
+                      <DashboardLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<DashboardPage />} />
+                  <Route path="settings" element={<SettingsLayout />}>
+                    <Route index element={<Navigate to="profile" replace />} />
+                    <Route path="profile" element={<ProfileSettings />} />
+                    <Route path="security" element={<SecuritySettings />} />
+                    <Route path="notifications" element={<NotificationsSettings />} />
+                    <Route path="appearance" element={<AppearanceSettings />} />
+                    <Route path="language" element={<LanguageSettings />} />
+                  </Route>
+                </Route>
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </WebSocketProvider>
+          </UserProfileProvider>
+        </FirebaseAuthProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

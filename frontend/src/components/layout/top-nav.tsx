@@ -4,7 +4,7 @@ import * as React from "react"
 import { Bell, Sun, Moon, Menu, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { cn } from "@/utils"
+import { cn } from "@/lib/utils"
 import { useTheme } from "next-themes"
 import { UserNav } from "@/components/user-nav"
 
@@ -27,7 +27,6 @@ export function TopNav({
 }: TopNavProps) {
   const { theme, setTheme } = useTheme()
   const [isScrolled, setIsScrolled] = React.useState(false)
-  const [isSearchFocused, setIsSearchFocused] = React.useState(false)
 
   // Handle scroll effect for the header
   React.useEffect(() => {
@@ -67,8 +66,6 @@ export function TopNav({
               type="search"
               placeholder="Search farmers, crops, suppliers..."
               className="w-full rounded-full bg-muted/50 pl-9 pr-4 transition-all focus:bg-background focus:ring-1 focus:ring-primary/50"
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => setIsSearchFocused(false)}
             />
           </div>
         </div>
@@ -102,77 +99,6 @@ export function TopNav({
             <UserNav user={user} />
           </div>
         </div>
-              <Button variant="ghost" className="w-full text-sm">
-                View all notifications
-              </Button>
-            </div>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* Theme Toggle */}
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={toggleTheme}
-          className="rounded-full"
-        >
-          {theme === 'dark' ? (
-            <Sun className="h-5 w-5" />
-          ) : (
-            <Moon className="h-5 w-5" />
-          )}
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-
-        {/* User Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-auto pl-2 pr-3 rounded-full gap-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="/avatars/01.png" alt="Admin User" />
-                <AvatarFallback className="bg-primary/10 text-primary">AU</AvatarFallback>
-              </Avatar>
-              <span className="hidden md:inline-flex items-center text-sm font-medium">
-                Admin
-                <ChevronDown className="ml-1 h-4 w-4 opacity-70" />
-              </span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" sideOffset={10}>
-            <DropdownMenuLabel className="font-normal p-4">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src="/avatars/01.png" alt="Admin User" />
-                  <AvatarFallback className="bg-primary/10 text-primary">AU</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium">Admin User</p>
-                  <p className="text-xs text-muted-foreground">admin@smartfarm.com</p>
-                </div>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-border/30" />
-            <DropdownMenuGroup>
-              <DropdownMenuItem className="cursor-pointer">
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                <HelpCircle className="mr-2 h-4 w-4" />
-                <span>Help & Support</span>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator className="bg-border/30" />
-            <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive">
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Log out</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
     </header>
   )

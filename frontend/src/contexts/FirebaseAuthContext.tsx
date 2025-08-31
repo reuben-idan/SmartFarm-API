@@ -1,55 +1,64 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { 
-  signInWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged
-} from 'firebase/auth';
+import { User, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { auth } from '@/config/firebase';
 
-/** @type {import('react').Context<{
-  currentUser: import('firebase/auth').User | null;
+// Types
+type AuthContextType = {
+  currentUser: User | null;
   loading: boolean;
   error: string;
-  login: (email: string, password: string) => Promise<import('firebase/auth').User>;
+  login: (email: string, password: string) => Promise<User | null>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
-} | undefined>} */
-const AuthContext = createContext();
+};
 
-export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(null);
+// Create context with default values
+const AuthContext = createContext<AuthContextType>({
+  currentUser: null,
+  loading: true,
+  error: '',
+  login: async () => null,
+  logout: async () => {},
+  isAuthenticated: false,
+});
+
+// Provider component
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Handle email/password login
-  const login = async (email, password) => {
+  // Login function
+  const login = async (email: string, password: string) => {
     try {
       setError('');
       setLoading(true);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       return userCredential.user;
-    } catch (error) {
-      setError(error.message);
+    } catch (error: any) {
+      const errorMessage = error?.message || 'Failed to log in';
+      setError(errorMessage);
       throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  // Logout
+  // Logout function
   const logout = async () => {
     try {
       setLoading(true);
       await signOut(auth);
-    } catch (error) {
-      setError(error.message);
+    } catch (error: any) {
+      const errorMessage = error?.message || 'Failed to log out';
+      setError(errorMessage);
       throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  // Set up auth state observer
+  // Set up auth state listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(
       auth,
@@ -73,7 +82,7 @@ export function AuthProvider({ children }) {
     error,
     login,
     logout,
-    isAuthenticated: !!currentUser
+    isAuthenticated: !!currentUser,
   };
 
   return (
@@ -83,12 +92,15 @@ export function AuthProvider({ children }) {
   );
 }
 
-export function useAuth() {
+// Custom hook to use the auth context
+export const useFirebaseAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useFirebaseAuth must be used within an AuthProvider');
   }
   return context;
-}
+};
 
+// Export the context and the provider
+export const FirebaseAuthProvider = AuthProvider;
 export default AuthContext;

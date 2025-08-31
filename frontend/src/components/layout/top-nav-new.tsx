@@ -4,7 +4,7 @@ import * as React from "react"
 import { Bell, Sun, Moon, Menu, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { cn } from "@/utils"
+import { cn } from "@/lib/utils"
 import { useTheme } from "next-themes"
 import { UserNav } from "@/components/user-nav"
 
@@ -27,7 +27,6 @@ export function TopNav({
 }: TopNavProps) {
   const { theme, setTheme } = useTheme()
   const [isScrolled, setIsScrolled] = React.useState(false)
-  const [isSearchFocused, setIsSearchFocused] = React.useState(false)
 
   // Handle scroll effect for the header
   React.useEffect(() => {
@@ -67,8 +66,6 @@ export function TopNav({
               type="search"
               placeholder="Search farmers, crops, suppliers..."
               className="w-full rounded-full bg-muted/50 pl-9 pr-4 transition-all focus:bg-background focus:ring-1 focus:ring-primary/50"
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => setIsSearchFocused(false)}
             />
           </div>
         </div>

@@ -25,7 +25,15 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
+    include: [
+      '@radix-ui/react-dialog', 
+      '@radix-ui/react-dropdown-menu',
+      'firebase/app',
+      'firebase/auth',
+      'firebase/firestore',
+      'firebase/storage'
+    ],
+    exclude: ['firebase'],
   },
   build: {
     commonjsOptions: {

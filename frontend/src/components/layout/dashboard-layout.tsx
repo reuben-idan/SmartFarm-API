@@ -2,7 +2,7 @@ import { useState, useEffect, ReactNode } from "react"
 import { Outlet } from "react-router-dom"
 import { Sidebar } from "./sidebar"
 import { TopNav } from "./top-nav-new"
-import { cn } from "@/utils"
+import { cn } from "@/lib/utils"
 
 interface DashboardLayoutProps {
   children?: ReactNode;

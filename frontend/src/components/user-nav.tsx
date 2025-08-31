@@ -1,7 +1,7 @@
 import * as React from "react"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { cn } from "@/utils"
+import { cn } from "@/lib/utils"
 import { LogOut, Settings, User, ChevronDown } from "lucide-react"
 
 interface UserNavProps {

@@ -45,7 +45,17 @@ interface AuthContextType {
 }
 
 // Create the auth context with a default value
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  login: async () => {},
+  loginWithGoogle: async () => {},
+  loginWithGithub: async () => {},
+  register: async () => {},
+  logout: () => {},
+  loading: false,
+  error: null,
+  isAuthenticated: false,
+});
 
 // Create the auth provider component
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
