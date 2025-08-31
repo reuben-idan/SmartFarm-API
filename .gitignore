@@ -26,10 +26,17 @@ ENV/
 
 # Environment variables
 .env
-.env.local
-.env.development
-.env.test
-.env.production
+.env.*
+!.env.example
+
+# Firebase
+**/serviceAccountKey.json
+**/firebase-credentials.json
+backend/serviceAccountKey.json
+
+# Local development
+local_settings.py
+*.local
 
 # Database
 *.sqlite3

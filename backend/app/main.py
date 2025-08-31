@@ -1,13 +1,35 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, status, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from typing import Optional
 import uuid
 import os
+
+from app.api.endpoints import auth as auth_endpoints
 
 app = FastAPI(
     title="SmartFarm API",
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    openapi_url="/openapi.json"
+)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, replace with your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"]
+)
+
+# Include API routers
+app.include_router(
+    auth_endpoints.router,
+    prefix="/api/auth",
+    tags=["Authentication"]
 )
 
 # Import WebSocket components only if they exist
@@ -27,9 +49,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
+@app.get("/", tags=["Root"])
 async def root():
-    return {"message": "SmartFarm API is running"}
+    return {
+        "message": "Welcome to SmartFarm API",
+        "docs": "/docs",
+        "redoc": "/redoc"
+    }
+
+# Health check endpoint
+@app.get("/health", tags=["Health"])
+async def health_check():
+    return {"status": "ok", "message": "Service is running"}
 
 @app.websocket("/ws/{client_id}")
 async def websocket_route(websocket: WebSocket, client_id: str):
@@ -39,18 +70,19 @@ async def websocket_route(websocket: WebSocket, client_id: str):
 @app.on_event("startup")
 async def startup():
     """Startup event handler"""
+    print("Starting up SmartFarm API...")
+    # Initialize WebSocket manager if available
     if HAS_WEBSOCKETS:
-        print("Starting WebSocket metrics broadcast")
-        await manager.start_metrics_broadcast()
-    else:
-        print("WebSocket manager not available. Skipping WebSocket initialization.")
+        await manager.connect()
+    print("Startup complete")
 
 @app.on_event("shutdown")
 async def shutdown():
-    """Shutdown event handler"""
+    print("Shutting down SmartFarm API...")
+    # Clean up WebSocket connections if available
     if HAS_WEBSOCKETS:
-        print("Stopping WebSocket metrics broadcast")
-        await manager.stop_metrics_broadcast()
+        await manager.disconnect()
+    print("Shutdown complete")
 
 # This block ensures the app can be run with `python -m app.main`
 if __name__ == "__main__":
