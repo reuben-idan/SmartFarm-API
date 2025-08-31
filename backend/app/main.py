@@ -1,18 +1,21 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, status, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from typing import Optional
+from typing import Optional, Dict, Any
 import uuid
 import os
 
 from app.api.endpoints import auth as auth_endpoints
+from app.dependencies.auth import get_current_user
+from app.firebase_auth import initialize_firebase
 
 app = FastAPI(
     title="SmartFarm API",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
-    openapi_url="/openapi.json"
+    openapi_url="/openapi.json",
+    on_startup=[initialize_firebase]  # Initialize Firebase on startup
 )
 
 # Configure CORS
@@ -67,13 +70,26 @@ async def root():
 # Health check endpoint
 @app.get("/health", tags=["Health"])
 async def health_check():
-    return {"status": "ok", "message": "Service is running"}
+    return {"status": "ok", "message": "API is running"}
+
+# Protected endpoint example
+@app.get("/api/protected", tags=["Authentication"])
+async def protected_route(user: Dict[str, Any] = Depends(get_current_user)):
+    """
+    Example protected route that requires authentication.
+    Returns user information from the verified Firebase token.
+    """
+    return {
+        "message": "You have access to protected content!",
+        "user_id": user.get("uid"),
+        "email": user.get("email"),
+        "email_verified": user.get("email_verified", False)
+    }
 
 @app.websocket("/ws/{client_id}")
 async def websocket_route(websocket: WebSocket, client_id: str):
     if not HAS_WEBSOCKETS:
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
-        return
     
     # Set CORS headers for WebSocket
     origin = websocket.headers.get('origin')
