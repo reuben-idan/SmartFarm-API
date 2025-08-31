@@ -2,7 +2,11 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
+// https://vitejs.dev/config/
 export default defineConfig({
+  define: {
+    'import.meta.env.VITE_WS_URL': JSON.stringify(process.env.VITE_WS_URL || 'ws://localhost:8000')
+  },
   plugins: [react()],
   server: {
     port: 3000,
@@ -44,8 +48,20 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: true,
     rollupOptions: {
-      external: ['react', 'react-dom']
-    }
+      external: ['react', 'react-dom'],
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          vendor: ['@tanstack/react-query', 'zod', 'date-fns'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-slot'],
+          charts: ['recharts'],
+        },
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash][extname]',
+      }
+    },
+    chunkSizeWarningLimit: 1000, // Increase chunk size warning limit to 1000KB
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom']

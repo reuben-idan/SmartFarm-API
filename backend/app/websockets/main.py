@@ -13,9 +13,28 @@ class ConnectionManager:
         self.metrics_task = None
 
     async def connect(self, websocket: WebSocket, client_id: str):
-        await websocket.accept()
-        self.active_connections[client_id] = websocket
-        print(f"Client {client_id} connected")
+        try:
+            # Set CORS headers for WebSocket
+            await websocket.accept()
+            
+            # Store the connection
+            self.active_connections[client_id] = websocket
+            print(f"Client {client_id} connected")
+            
+            # Send initial connection confirmation
+            await self.send_personal_message(
+                json.dumps({"type": "connection_established", "message": "Connected to SmartFarm WebSocket"}),
+                client_id
+            )
+            
+            # Start metrics broadcast if not already started
+            await self.start_metrics_broadcast()
+            
+        except Exception as e:
+            print(f"Error in WebSocket connection for {client_id}: {e}")
+            if not websocket.client_state == WebSocketState.DISCONNECTED:
+                await websocket.close()
+            raise
 
     def disconnect(self, client_id: str):
         if client_id in self.active_connections:
@@ -87,18 +106,55 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 async def websocket_endpoint(websocket: WebSocket, client_id: str):
-    await manager.connect(websocket, client_id)
-    await manager.start_metrics_broadcast()
+    # Set CORS headers
+    headers = {
+        "Access-Control-Allow-Origin": "http://localhost:3000, http://localhost:3002",
+        "Access-Control-Allow-Credentials": "true"
+    }
     
     try:
+        # Accept the WebSocket connection
+        await websocket.accept(subprotocol="json", headers=headers)
+        
+        # Add client to connection manager
+        await manager.connect(websocket, client_id)
+        
+        # Keep the connection alive
         while True:
-            # Keep the connection alive
-            data = await websocket.receive_text()
-            # Handle incoming messages if needed
-            print(f"Received from {client_id}: {data}")
-            
-    except WebSocketDisconnect:
-        manager.disconnect(client_id)
+            try:
+                # Wait for any message from the client
+                data = await websocket.receive_text()
+                
+                # Handle different message types
+                try:
+                    message = json.loads(data)
+                    if message.get('type') == 'ping':
+                        await manager.send_personal_message(
+                            json.dumps({"type": "pong", "timestamp": datetime.utcnow().isoformat()}),
+                            client_id
+                        )
+                except json.JSONDecodeError:
+                    # If not JSON, just echo it back
+                    await manager.send_personal_message(
+                        json.dumps({"type": "echo", "message": data}),
+                        client_id
+                    )
+                    
+            except WebSocketDisconnect:
+                print(f"Client {client_id} disconnected")
+                manager.disconnect(client_id)
+                break
+                
+            except Exception as e:
+                print(f"Error handling WebSocket message from {client_id}: {e}")
+                await manager.send_personal_message(
+                    json.dumps({"type": "error", "message": str(e)}),
+                    client_id
+                )
+    
     except Exception as e:
-        print(f"WebSocket error: {e}")
+        print(f"WebSocket connection error for {client_id}: {e}")
+        if not websocket.client_state == WebSocketState.DISCONNECTED:
+            await websocket.close()
         manager.disconnect(client_id)
+        raise

@@ -16,13 +16,20 @@ app = FastAPI(
 )
 
 # Configure CORS
+frontend_urls = [
+    "http://localhost:3000",
+    "http://localhost:3002",
+    "http://localhost:3003",
+    "http://localhost:5173"  # Vite's default port
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with your frontend URL
+    allow_origins=frontend_urls,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"]
+    expose_headers=["*"],
 )
 
 # Include API routers
@@ -40,10 +47,10 @@ except ImportError:
     HAS_WEBSOCKETS = False
     print("WebSocket components not found. WebSocket functionality will be disabled.")
 
-# CORS middleware configuration
+# WebSocket CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with your frontend URL
+    allow_origins=["http://localhost:3000", "http://localhost:3002"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -64,8 +71,33 @@ async def health_check():
 
 @app.websocket("/ws/{client_id}")
 async def websocket_route(websocket: WebSocket, client_id: str):
-    """WebSocket endpoint for real-time communication"""
-    await websocket_endpoint(websocket, client_id)
+    if not HAS_WEBSOCKETS:
+        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+        return
+    
+    # Set CORS headers for WebSocket
+    origin = websocket.headers.get('origin')
+    allowed_origins = ["http://localhost:3000", "http://localhost:3002", "http://localhost:3003"]
+    
+    if origin and origin not in allowed_origins:
+        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+        return
+    
+    # Accept the connection with CORS headers
+    await websocket.accept()
+    
+    try:
+        # Use the websocket_endpoint from the websocket module
+        await websocket_endpoint(websocket, client_id)
+    except WebSocketDisconnect:
+        print(f"Client {client_id} disconnected")
+        if client_id in manager.active_connections:
+            manager.disconnect(client_id)
+    except Exception as e:
+        print(f"WebSocket error for {client_id}: {str(e)}")
+        if not websocket.client_state == WebSocketState.DISCONNECTED:
+            await websocket.close(code=status.WS_1011_INTERNAL_ERROR)
+        manager.disconnect(client_id)
 
 @app.on_event("startup")
 async def startup():

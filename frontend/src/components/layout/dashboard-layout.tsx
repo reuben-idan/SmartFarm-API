@@ -93,7 +93,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
           </div>
         </footer>
-        </div>
       </div>
     </div>
   )

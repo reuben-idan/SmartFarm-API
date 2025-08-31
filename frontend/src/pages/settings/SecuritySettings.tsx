@@ -1,5 +1,4 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { authService } from '@/lib/api/auth.service';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useToast } from '@/components/ui/toast';
+import { useToast } from '@/components/ui/use-toast';
 
 // Form schema for password change
 const passwordFormSchema = z.object({
@@ -27,7 +26,7 @@ type PasswordFormValues = z.infer<typeof passwordFormSchema>;
 
 export default function SecuritySettings() {
   const { user: currentUser } = useAuth();
-  const { addToast } = useToast();
+  const { toast } = useToast();
   
   const form = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordFormSchema),
@@ -48,9 +47,9 @@ export default function SecuritySettings() {
     );
   }
 
-  const handlePasswordUpdate = async (data: PasswordFormValues) => {
+  const handlePasswordUpdate = async () => {
     if (!currentUser?.email) {
-      addToast({
+      toast({
         title: 'Error',
         description: 'No user email found. Please sign in again.',
         variant: 'destructive',
@@ -59,25 +58,22 @@ export default function SecuritySettings() {
     }
 
     try {
-      // First verify the current password by attempting to log in
-      await authService.login({ email: currentUser.email, password: data.currentPassword });
-      
-      // In a real implementation, you would call your backend API to update the password here
+      // In a real implementation, call the API to update the password
       // For now, we'll just show a success message
-      addToast({
+      toast({
         title: 'Success',
-        description: 'Your password has been verified. In a complete implementation, the password would be updated here.',
-        variant: 'default',
+        description: 'Password update functionality will be implemented in a future update.',
       });
       
       // Reset the form
       reset();
     } catch (error) {
       console.error('Error updating password:', error);
+      
       const errorMessage = (error as any)?.response?.data?.message || 
                          (error as Error)?.message || 
                          'Failed to update password. Please check your current password and try again.';
-      addToast({
+      toast({
         title: 'Error',
         description: errorMessage,
         variant: 'destructive',

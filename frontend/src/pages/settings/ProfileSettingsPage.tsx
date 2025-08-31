@@ -1,6 +1,6 @@
 import { useUserProfile } from '@/contexts/UserProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/components/ui/toast';
+import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,7 +30,7 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 export default function ProfileSettingsPage() {
   const { profile, updateProfile, loading: profileLoading } = useUserProfile();
   const { user: currentUser } = useAuth();
-  const { addToast } = useToast();
+  const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | undefined>(undefined);
 
@@ -75,13 +75,13 @@ export default function ProfileSettingsPage() {
         photoURL: data.photoURL || undefined,
       });
       
-      addToast({
+      toast({
         title: 'Profile updated',
         description: 'Your profile has been updated successfully.',
       });
     } catch (error) {
       console.error('Error updating profile:', error);
-      addToast({
+      toast({
         title: 'Error',
         description: error instanceof Error ? error.message : 'Failed to update profile. Please try again.',
         variant: 'destructive',
