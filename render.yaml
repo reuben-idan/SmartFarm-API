@@ -9,7 +9,7 @@ services:
       poetry install --no-interaction --no-ansi
     startCommand: >-
       cd /opt/render/project/src && \
-      gunicorn -w 4 -k uvicorn.workers.UvicornWorker wsgi:application --chdir /opt/render/project/src
+      gunicorn -w 4 -k uvicorn.workers.UvicornWorker backend.app.main:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
