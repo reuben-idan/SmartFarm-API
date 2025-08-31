@@ -121,15 +121,17 @@ async def startup():
     print("Starting up SmartFarm API...")
     # Initialize WebSocket manager if available
     if HAS_WEBSOCKETS:
-        await manager.connect()
+        print("WebSocket manager initialized")
     print("Startup complete")
 
 @app.on_event("shutdown")
 async def shutdown():
     print("Shutting down SmartFarm API...")
     # Clean up WebSocket connections if available
-    if HAS_WEBSOCKETS:
-        await manager.disconnect()
+    if HAS_WEBSOCKETS and hasattr(manager, 'active_connections') and manager.active_connections:
+        print(f"Disconnecting {len(manager.active_connections)} WebSocket connections...")
+        for connection_id in list(manager.active_connections.keys()):
+            await manager.disconnect(connection_id)
     print("Shutdown complete")
 
 # This block ensures the app can be run with `python -m app.main`
