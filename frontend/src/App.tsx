@@ -3,7 +3,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import DashboardPage from '@/pages/dashboard/dashboard';
 import { useFirebaseAuth, FirebaseAuthProvider } from '@/contexts/FirebaseAuthContext';
-import { UserProfileProvider } from '@/contexts/UserProfileContext';
+import { UserProfileProvider, useUserProfile } from '@/contexts/UserProfileContext';
 import { WebSocketProvider } from '@/contexts/WebSocketContext';
 import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
@@ -15,6 +15,14 @@ import SecuritySettings from '@/pages/settings/SecuritySettings';
 import NotificationsSettings from '@/pages/settings/NotificationsSettings';
 import AppearanceSettings from '@/pages/settings/AppearanceSettings';
 import LanguageSettings from '@/pages/settings/LanguageSettings';
+import FarmersPage from '@/pages/farmers/FarmersPage';
+import CropsPage from '@/pages/crops/CropsPage';
+import SuppliersPage from '@/pages/suppliers/SuppliersPage';
+import MarketPricesPage from '@/pages/market-prices/MarketPricesPage';
+import RecommendationsPage from '@/pages/recommendations/RecommendationsPage';
+import ReportsPage from '@/pages/reports/ReportsPage';
+import CalendarPage from '@/pages/calendar/CalendarPage';
+import ProfilePage from '@/pages/profile/ProfilePage';
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const { isAuthenticated, loading } = useFirebaseAuth();
@@ -71,6 +79,15 @@ export function App() {
                   }
                 >
                   <Route index element={<DashboardPage />} />
+                  <Route path="dashboard" element={<DashboardPage />} />
+                  <Route path="farmers" element={<FarmersPage />} />
+                  <Route path="crops" element={<CropsPage />} />
+                  <Route path="suppliers" element={<SuppliersPage />} />
+                  <Route path="prices" element={<MarketPricesPage />} />
+                  <Route path="recommendations" element={<RecommendationsPage />} />
+                  <Route path="reports" element={<ReportsPage />} />
+                  <Route path="calendar" element={<CalendarPage />} />
+                  <Route path="profile" element={<ProfilePage />} />
                   <Route path="settings" element={<SettingsLayout />}>
                     <Route index element={<Navigate to="profile" replace />} />
                     <Route path="profile" element={<ProfileSettings />} />

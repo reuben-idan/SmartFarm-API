@@ -38,6 +38,8 @@ interface AuthContextType {
     password: string;
     role: string;
   }) => Promise<void>;
+  updateProfile: (updates: Partial<User>) => Promise<boolean>;
+  refreshUser: () => Promise<void>;
   logout: () => void;
   loading: boolean;
   error: string | null;
@@ -51,6 +53,8 @@ const AuthContext = createContext<AuthContextType>({
   loginWithGoogle: async () => {},
   loginWithGithub: async () => {},
   register: async () => {},
+  updateProfile: async () => false,
+  refreshUser: async () => {},
   logout: () => {},
   loading: false,
   error: null,
@@ -64,6 +68,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Load user from localStorage on initial load
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        if (token) {
+          const userData = await authService.getCurrentUser();
+          setUser(userData);
+        }
+      } catch (err) {
+        console.error('Failed to load user:', err);
+        localStorage.removeItem('token');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUser();
+  }, []);
 
   // Check if user is logged in on initial load
   const checkAuth = useCallback(async () => {

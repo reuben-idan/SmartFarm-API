@@ -2,7 +2,9 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { 
   signInWithEmailAndPassword, 
   signOut, 
-  onAuthStateChanged
+  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  updateProfile
 } from 'firebase/auth';
 import { auth } from '@/config/firebase';
 
@@ -11,6 +13,13 @@ import { auth } from '@/config/firebase';
   loading: boolean;
   error: string;
   login: (email: string, password: string) => Promise<import('firebase/auth').User>;
+  register: (data: {
+    email: string;
+    password: string;
+    first_name: string;
+    last_name: string;
+    role: string;
+  }) => Promise<import('firebase/auth').User>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
 } | undefined>} */
@@ -30,6 +39,38 @@ export function AuthProvider({ children }) {
       return userCredential.user;
     } catch (error) {
       setError(error.message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Register new user
+  const register = async ({ email, password, first_name, last_name, role }) => {
+    try {
+      setError('');
+      setLoading(true);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Update user profile with display name
+      await updateProfile(userCredential.user, {
+        displayName: `${first_name} ${last_name}`,
+      });
+
+      // Here you would typically create a user document in Firestore with additional info
+      // For example:
+      // await setDoc(doc(db, 'users', userCredential.user.uid), {
+      //   firstName: first_name,
+      //   lastName: last_name,
+      //   email: email,
+      //   role: role,
+      //   createdAt: serverTimestamp(),
+      // });
+
+      return userCredential.user;
+    } catch (error) {
+      console.error('Registration error:', error);
+      setError(error.message || 'Failed to create account');
       throw error;
     } finally {
       setLoading(false);
@@ -72,6 +113,7 @@ export function AuthProvider({ children }) {
     loading,
     error,
     login,
+    register,
     logout,
     isAuthenticated: !!currentUser
   };

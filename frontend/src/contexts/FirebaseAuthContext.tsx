@@ -1,5 +1,12 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { User, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { 
+  User, 
+  onAuthStateChanged, 
+  signInWithEmailAndPassword, 
+  signOut, 
+  createUserWithEmailAndPassword,
+  updateProfile
+} from 'firebase/auth';
 import { auth } from '@/config/firebase';
 
 // Types
@@ -8,6 +15,13 @@ type AuthContextType = {
   loading: boolean;
   error: string;
   login: (email: string, password: string) => Promise<User | null>;
+  register: (data: {
+    email: string;
+    password: string;
+    first_name: string;
+    last_name: string;
+    role: string;
+  }) => Promise<User | null>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
 };
@@ -18,6 +32,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   error: '',
   login: async () => null,
+  register: async () => null,
   logout: async () => {},
   isAuthenticated: false,
 });
@@ -37,6 +52,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return userCredential.user;
     } catch (error: any) {
       const errorMessage = error?.message || 'Failed to log in';
+      setError(errorMessage);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Register function
+  const register = async ({ email, password, first_name, last_name, role }: {
+    email: string;
+    password: string;
+    first_name: string;
+    last_name: string;
+    role: string;
+  }) => {
+    try {
+      setError('');
+      setLoading(true);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Update user profile with display name
+      await updateProfile(userCredential.user, {
+        displayName: `${first_name} ${last_name}`,
+      });
+
+      // Here you would typically create a user document in Firestore with additional info
+      // For example:
+      // await setDoc(doc(db, 'users', userCredential.user.uid), {
+      //   firstName: first_name,
+      //   lastName: last_name,
+      //   email: email,
+      //   role: role,
+      //   createdAt: serverTimestamp(),
+      // });
+
+      return userCredential.user;
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      const errorMessage = error?.message || 'Failed to create account';
       setError(errorMessage);
       throw error;
     } finally {
@@ -81,6 +135,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading,
     error,
     login,
+    register,
     logout,
     isAuthenticated: !!currentUser,
   };

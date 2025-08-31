@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Loader2, LogIn, Mail, Github } from 'lucide-react';
+import { Loader2, LogIn, Mail, Github, ArrowLeft } from 'lucide-react';
+import smartfarmLogo from '@/components/smartfarmlogo.png';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -94,6 +95,13 @@ export function LoginPage() {
       <div className="w-full max-w-md">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
           <div className="p-8">
+            <div className="flex justify-center mb-6">
+              <img 
+                src={smartfarmLogo} 
+                alt="SmartFarm Logo" 
+                className="h-16 w-auto" 
+              />
+            </div>
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">
                 Welcome Back
