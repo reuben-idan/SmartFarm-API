@@ -1,21 +1,21 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, status, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import OAuth2PasswordBearer
 from typing import Optional, Dict, Any
 import uuid
 import os
 
 from app.api.endpoints import auth as auth_endpoints
-from app.dependencies.auth import get_current_user
-from app.firebase_auth import initialize_firebase
+from app.core.auth import get_current_active_user
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 app = FastAPI(
     title="SmartFarm API",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
-    openapi_url="/openapi.json",
-    on_startup=[initialize_firebase]  # Initialize Firebase on startup
+    openapi_url="/openapi.json"
 )
 
 # Configure CORS
@@ -74,16 +74,16 @@ async def health_check():
 
 # Protected endpoint example
 @app.get("/api/protected", tags=["Authentication"])
-async def protected_route(user: Dict[str, Any] = Depends(get_current_user)):
+async def protected_route(current_user: Dict[str, Any] = Depends(get_current_active_user)):
     """
     Example protected route that requires authentication.
-    Returns user information from the verified Firebase token.
+    Returns user information from the verified JWT token.
     """
     return {
         "message": "You have access to protected content!",
-        "user_id": user.get("uid"),
-        "email": user.get("email"),
-        "email_verified": user.get("email_verified", False)
+        "user": current_user.get("username"),
+        "email": current_user.get("email"),
+        "is_admin": current_user.get("is_admin", False)
     }
 
 @app.websocket("/ws/{client_id}")

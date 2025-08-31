@@ -1,48 +1,47 @@
-from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from typing import Optional
-from app.core.firebase import get_current_user
+from typing import Optional, Dict, Any
+from fastapi import Depends, HTTPException, status, Request
+from fastapi.security import OAuth2PasswordBearer
 
-security = HTTPBearer()
+from app.core.auth import (
+    get_current_user,
+    get_current_active_user as get_auth_active_user,
+    get_current_admin_user as get_auth_admin_user,
+    oauth2_scheme
+)
 
-async def get_current_active_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security)
-) -> dict:
+# Re-export the auth dependencies for easier imports
+# These can be used in route dependencies like: Depends(get_current_active_user)
+
+def get_current_user_dependency(
+    request: Request,
+    token: str = Depends(oauth2_scheme)
+) -> Dict[str, Any]:
     """
     Dependency that will return the current user if the token is valid.
-    This can be used as a dependency in FastAPI route handlers.
+    
+    This is a wrapper around the core auth function to maintain compatibility.
     """
-    if credentials.scheme != "Bearer":
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication scheme",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    token = credentials.credentials
-    user = await get_current_user(token)
-    
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    return user
+    return get_current_user(request, token)
 
-# Optional: Add role-based access control
-async def get_current_admin_user(
-    current_user: dict = Depends(get_current_active_user)
-) -> dict:
+async def get_current_active_user(
+    current_user: Dict[str, Any] = Depends(get_auth_active_user)
+) -> Dict[str, Any]:
     """
-    Dependency that checks if the current user is an admin.
-    This verifies the user has admin role in their token claims.
+    Dependency that will return the current active user.
+    
+    This ensures the user's account is active and they have valid credentials.
     """
-    # Check if user has admin role in their token claims
-    if not current_user.get('admin', False):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Insufficient permissions to access this resource",
-        )
     return current_user
+
+async def get_current_admin_user(
+    current_user: Dict[str, Any] = Depends(get_auth_admin_user)
+) -> Dict[str, Any]:
+    """
+    Dependency that will return the current user only if they are an admin.
+    
+    This should be used for routes that require admin privileges.
+    """
+    return current_user
+
+# For backward compatibility
+get_current_user = get_current_user_dependency
