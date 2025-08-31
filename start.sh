@@ -2,8 +2,8 @@
 # Exit on error
 set -o errexit
 
-# Install dependencies
-pip install -r requirements.txt
+# Install dependencies if not already installed
+pip install gunicorn uvicorn[standard] fastapi websockets
 
-# Run the FastAPI app
-exec uvicorn app.main:app --host 0.0.0.0 --port $PORT
+# Run the FastAPI app with Gunicorn
+exec gunicorn -w 4 -k uvicorn.workers.UvicornWorker backend.app.main:app --bind 0.0.0.0:$PORT
