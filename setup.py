@@ -1,22 +1,21 @@
 from setuptools import setup, find_packages
 
+with open("requirements.txt") as f:
+    requirements = f.read().splitlines()
+
 setup(
-    name="smartfarm_api",
-    version="0.1",
-    packages=find_packages(where='.'),
-    package_dir={"": "."},
+    name="smartfarm-api",
+    version="0.1.0",
+    packages=find_packages(include=['backend', 'backend.*']),
+    install_requires=requirements,
+    python_requires=">=3.11.0",
     include_package_data=True,
-    install_requires=[
-        'fastapi>=0.68.0',
-        'uvicorn[standard]>=0.15.0',
-        'gunicorn>=20.1.0',
-        'python-jose[cryptography]>=3.3.0',
-        'passlib[bcrypt]>=1.7.4',
-        'python-multipart>=0.0.5',
-        'python-dotenv>=0.19.0',
-        'pydantic>=1.8.2',
-        'websockets>=10.0',
-        'python-dateutil>=2.8.2'
-    ],
-    python_requires='>=3.8',
+    package_data={
+        '': ['*.yaml', '*.yml', '*.json', '*.md', '.env*'],
+    },
+    entry_points={
+        'console_scripts': [
+            'smartfarm-api=backend.app.main:main',
+        ],
+    },
 )
