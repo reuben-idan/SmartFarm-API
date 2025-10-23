@@ -1,7 +1,7 @@
 // SmartFarm Frontend Application
 class SmartFarmApp {
     constructor() {
-        this.API_BASE = 'https://your-backend-domain.com/api'; // Update with your actual backend URL
+        this.API_BASE = 'http://127.0.0.1:8000/api'; // Local Django development server
         this.currentUser = null;
         this.isAuthMode = 'login';
         this.init();
@@ -70,6 +70,10 @@ class SmartFarmApp {
                 },
                 ...options
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
 
             const data = await response.json();
             return data;
@@ -161,19 +165,19 @@ class SmartFarmApp {
         const indicator = document.getElementById('statusIndicator');
         
         try {
-            const result = await this.apiCall('/health/');
+            const result = await this.apiCall('/status/');
             
             if (result.success) {
                 statusElement.textContent = 'System Online';
-                indicator.style.background = 'var(--success-color)';
+                indicator.style.background = '#34c759';
                 this.loadStats();
             } else {
                 statusElement.textContent = 'System Offline';
-                indicator.style.background = 'var(--error-color)';
+                indicator.style.background = '#ff3b30';
             }
         } catch (error) {
             statusElement.textContent = 'Connection Error';
-            indicator.style.background = 'var(--error-color)';
+            indicator.style.background = '#ff3b30';
         }
     }
 
