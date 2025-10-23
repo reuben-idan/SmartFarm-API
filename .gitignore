@@ -42,3 +42,4 @@ Thumbs.db
 
 # Avoid accidentally committing nested repo
 SmartFarm-API/
+.vercel

@@ -37,7 +37,7 @@ SECRET_KEY = env('SECRET_KEY', default='django-insecure-your-secret-key-here')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', default=True)
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', 'testserver'])
 
 
 # Application definition
@@ -72,11 +72,14 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'core.middleware.APIResponseMiddleware',
+    'core.middleware.LoadingStateMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'core.middleware.ValidationMiddleware',
 ]
 
 ROOT_URLCONF = 'smartfarm.urls'
@@ -152,21 +155,51 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Deterministic constants for mock yield forecasting
-# Base yields are in tons per hectare (t/ha)
+# Ghana-specific yield data (tons per hectare)
 YIELD_BASE_YIELDS = {
-    'maize': 4.0,
-    'beans': 1.5,
-    'wheat': 3.5,
-    'rice': 5.0,
+    'maize': 2.5,
+    'rice': 4.2,
+    'millet': 1.0,
+    'sorghum': 1.8,
+    'cowpea': 1.2,
+    'groundnut': 1.5,
+    'soybean': 2.0,
+    'bambara groundnut': 0.8,
+    'cassava': 15.0,
+    'yam': 12.0,
+    'sweet potato': 8.0,
+    'cocoyam': 10.0,
+    'plantain': 25.0,
+    'tomato': 20.0,
+    'onion': 15.0,
+    'pepper': 8.0,
+    'okra': 6.0,
+    'garden egg': 12.0,
+    'cabbage': 30.0,
+    'carrot': 18.0,
+    'cocoa': 0.8,
+    'oil palm': 3.5,
+    'cotton': 1.2,
+    'cashew': 1.0,
+    'shea': 0.5,
+    'mango': 8.0,
+    'orange': 12.0,
+    'pineapple': 35.0,
+    'banana': 20.0,
 }
 
 # Regional multipliers
 YIELD_REGION_MULTIPLIERS = {
-    'nairobi': 0.9,
-    'mombasa': 0.8,
-    'kisumu': 1.0,
-    'nakuru': 1.1,
+    'accra': 0.9,
+    'kumasi': 1.1,
+    'tamale': 1.2,
+    'cape coast': 0.8,
+    'ho': 1.0,
+    'sunyani': 1.15,
+    'koforidua': 0.95,
+    'wa': 1.25,
+    'bolgatanga': 1.05,
+    'takoradi': 0.85,
 }
 
 # Season factors (align with crops.models.Season values)
@@ -174,6 +207,7 @@ YIELD_SEASON_FACTORS = {
     'major': 1.0,
     'minor': 0.85,
     'all': 0.95,
+    'dry': 0.7,
 }
 
 # Custom user model
@@ -191,6 +225,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'EXCEPTION_HANDLER': 'core.exceptions.custom_exception_handler',
 }
 
 # JWT Settings
@@ -205,12 +240,83 @@ SIMPLE_JWT = {
 # CORS Settings
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'x-loading',
+]
+
+# Cache Configuration
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'smartfarm-cache',
+        'TIMEOUT': 300,
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000,
+        }
+    }
+}
+
+# Logging Configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'smartfarm.log',
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'root': {
+        'handlers': ['console', 'file'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'smartfarm': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'propagate': False,
+        },
+    },
+}
 
 # Spectacular Settings
 SPECTACULAR_SETTINGS = {
     'TITLE': 'SmartFarm API',
-    'DESCRIPTION': 'API for SmartFarm application',
+    'DESCRIPTION': 'A modern, scalable RESTful API for agricultural management systems',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'SCHEMA_PATH_PREFIX': r'/api/v[0-9]',
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SORT_OPERATIONS': False,
 }

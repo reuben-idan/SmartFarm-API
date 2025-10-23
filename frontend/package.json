@@ -1,0 +1,18 @@
+{
+  "name": "smartfarm-frontend",
+  "version": "1.0.0",
+  "description": "SmartFarm Frontend - Glassmorphic UI",
+  "main": "index.html",
+  "scripts": {
+    "dev": "live-server --port=3000 --open=/index.html",
+    "start": "live-server --port=3000 --open=/index.html",
+    "build": "echo 'No build process needed for vanilla HTML/CSS/JS'",
+    "serve": "python -m http.server 3000"
+  },
+  "keywords": ["agriculture", "farming", "api", "frontend"],
+  "author": "SmartFarm Team",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}

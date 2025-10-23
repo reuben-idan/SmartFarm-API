@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartFarm - Agricultural Intelligence</title>
+    <link rel="icon" type="image/png" href="image/logo.png">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <img src="image/logo.png" alt="SmartFarm Logo" class="logo">
+                    <span class="brand-text">SmartFarm</span>
+                </div>
+                <div class="nav-menu">
+                    <a href="#dashboard" class="nav-link active">Dashboard</a>
+                    <a href="#recommendations" class="nav-link">Recommendations</a>
+                    <a href="#forecast" class="nav-link">Forecast</a>
+                    <a href="#prices" class="nav-link">Prices</a>
+                </div>
+                <div class="nav-actions">
+                    <button class="btn-secondary" id="loginBtn">Login</button>
+                    <button class="btn-primary" id="signupBtn">Sign Up</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Agricultural Intelligence at Your Fingertips</h1>
+                <p class="hero-subtitle">Get crop recommendations, yield forecasts, and market insights powered by AI</p>
+                <div class="hero-actions">
+                    <button class="btn-primary large" onclick="scrollToSection('dashboard')">Get Started</button>
+                    <button class="btn-secondary large" onclick="checkAPIStatus()">API Status</button>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="floating-card">
+                    <div class="card-icon">📊</div>
+                    <div class="card-text">Real-time Analytics</div>
+                </div>
+                <div class="floating-card delay-1">
+                    <div class="card-icon">🌾</div>
+                    <div class="card-text">Crop Intelligence</div>
+                </div>
+                <div class="floating-card delay-2">
+                    <div class="card-icon">💰</div>
+                    <div class="card-text">Market Insights</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section">
+            <div class="container">
+                <h2 class="section-title">Dashboard</h2>
+                <div class="dashboard-grid">
+                    <!-- API Status Card -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3>System Status</h3>
+                            <div class="status-indicator" id="statusIndicator">
+                                <div class="pulse"></div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div id="apiStatus" class="status-text">Checking...</div>
+                            <button class="btn-outline" onclick="checkAPIStatus()">Refresh</button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3>Quick Stats</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-value" id="totalCrops">-</div>
+                                    <div class="stat-label">Crops Available</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="totalRegions">10</div>
+                                    <div class="stat-label">Regions Covered</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Data Coverage -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3>Data Coverage</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="coverage-info">
+                                <div class="coverage-item">
+                                    <strong>Regions:</strong> Accra, Kumasi, Tamale, Cape Coast, Ho, Sunyani, Koforidua, Wa, Bolgatanga, Takoradi
+                                </div>
+                                <div class="coverage-item">
+                                    <strong>Seasons:</strong> Major (Mar-Jul), Minor (Oct-Dec), Dry Season, Year Round
+                                </div>
+                                <div class="coverage-item">
+                                    <strong>Soil Types:</strong> Loamy, Clay, Sandy, Silty, Volcanic, Alluvial, Peaty, Chalky
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recommendations Section -->
+        <section id="recommendations" class="section">
+            <div class="container">
+                <h2 class="section-title">Crop Recommendations</h2>
+                <div class="glass-card large">
+                    <div class="card-header">
+                        <h3>Get Personalized Recommendations</h3>
+                        <div class="rec-summary" id="recSummary" style="display:none;">
+                            <span class="summary-text">Found <span id="recCount">0</span> recommendations</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Region *</label>
+                                <select id="region" class="form-control">
+                                    <option value="">Select Region</option>
+                                    <option value="accra">Greater Accra</option>
+                                    <option value="kumasi">Ashanti (Kumasi)</option>
+                                    <option value="tamale">Northern (Tamale)</option>
+                                    <option value="cape coast">Central (Cape Coast)</option>
+                                    <option value="ho">Volta (Ho)</option>
+                                    <option value="sunyani">Brong Ahafo (Sunyani)</option>
+                                    <option value="koforidua">Eastern (Koforidua)</option>
+                                    <option value="wa">Upper West (Wa)</option>
+                                    <option value="bolgatanga">Upper East (Bolgatanga)</option>
+                                    <option value="takoradi">Western (Takoradi)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Season</label>
+                                <select id="season-filter" class="form-control">
+                                    <option value="">Any Season</option>
+                                    <option value="major">Major Season (Apr-Jul)</option>
+                                    <option value="minor">Minor Season (Sep-Dec)</option>
+                                    <option value="all">Year Round</option>
+                                    <option value="dry">Dry Season (Jan-Mar)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Soil Type</label>
+                                <select id="soilType" class="form-control">
+                                    <option value="">Any Soil Type</option>
+                                    <option value="loamy">Loamy Soil (Best for most crops)</option>
+                                    <option value="clay">Clay Soil (Water retention)</option>
+                                    <option value="sandy">Sandy Soil (Good drainage)</option>
+                                    <option value="silty">Silty Soil (Fertile)</option>
+                                    <option value="alluvial">Alluvial Soil (River deposits)</option>
+                                    <option value="volcanic">Volcanic Soil (Nutrient rich)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Farm Size (Hectares)</label>
+                                <select id="farmSize" class="form-control">
+                                    <option value="">Any Size</option>
+                                    <option value="small">Small Scale (0.1-2 ha)</option>
+                                    <option value="medium">Medium Scale (2-10 ha)</option>
+                                    <option value="large">Large Scale (10+ ha)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Experience Level</label>
+                                <select id="experience" class="form-control">
+                                    <option value="">Any Level</option>
+                                    <option value="beginner">Beginner (0-2 years)</option>
+                                    <option value="intermediate">Intermediate (2-5 years)</option>
+                                    <option value="expert">Expert (5+ years)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Budget Range (GHS)</label>
+                                <select id="budget" class="form-control">
+                                    <option value="">Any Budget</option>
+                                    <option value="low">Low (< 1,000)</option>
+                                    <option value="medium">Medium (1,000-5,000)</option>
+                                    <option value="high">High (5,000+)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-primary" onclick="getRecommendations()">
+                                <span class="btn-text">Get Smart Recommendations</span>
+                                <div class="btn-loader" id="recLoader"></div>
+                            </button>
+                            <button class="btn-outline" onclick="clearRecommendationFilters()">Clear Filters</button>
+                        </div>
+                        <div id="recommendations-results" class="results-container"></div>
+                        <div id="recommendations-chart" class="chart-container" style="display:none;">
+                            <canvas id="recChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Forecast Section -->
+        <section id="forecast" class="section">
+            <div class="container">
+                <h2 class="section-title">Yield Forecast</h2>
+                <div class="glass-card large">
+                    <div class="card-header">
+                        <h3>Advanced Yield Prediction</h3>
+                        <div class="forecast-info">
+                            <span class="info-text">AI-powered yield forecasting with multiple factors</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Crop Type *</label>
+                                <select id="crop" class="form-control">
+                                    <option value="">Select Crop</option>
+                                    <optgroup label="Staple Cereals">
+                                        <option value="maize">Maize (Aburo)</option>
+                                        <option value="rice">Rice (Emo)</option>
+                                        <option value="millet">Millet (Awa)</option>
+                                        <option value="sorghum">Sorghum (Aburukese)</option>
+                                    </optgroup>
+                                    <optgroup label="Legumes">
+                                        <option value="cowpea">Cowpea (Ewa/Adua)</option>
+                                        <option value="groundnut">Groundnut (Nkate)</option>
+                                        <option value="soybean">Soybean</option>
+                                        <option value="bambara groundnut">Bambara Groundnut</option>
+                                    </optgroup>
+                                    <optgroup label="Root & Tuber Crops">
+                                        <option value="cassava">Cassava (Bankye)</option>
+                                        <option value="yam">Yam (Bayere)</option>
+                                        <option value="sweet potato">Sweet Potato (Amankani)</option>
+                                        <option value="cocoyam">Cocoyam (Mankani)</option>
+                                        <option value="plantain">Plantain (Kwadu)</option>
+                                    </optgroup>
+                                    <optgroup label="Vegetables">
+                                        <option value="tomato">Tomato (Ntosi)</option>
+                                        <option value="onion">Onion (Gyeene)</option>
+                                        <option value="pepper">Pepper (Mako)</option>
+                                        <option value="okra">Okra (Nkruma)</option>
+                                        <option value="garden egg">Garden Egg (Kwansusua)</option>
+                                        <option value="cabbage">Cabbage</option>
+                                        <option value="carrot">Carrot</option>
+                                    </optgroup>
+                                    <optgroup label="Cash Crops">
+                                        <option value="cocoa">Cocoa (Koko)</option>
+                                        <option value="oil palm">Oil Palm (Abe)</option>
+                                        <option value="cotton">Cotton (Asaawa)</option>
+                                        <option value="cashew">Cashew</option>
+                                        <option value="shea">Shea Nut (Nkuto)</option>
+                                    </optgroup>
+                                    <optgroup label="Fruits">
+                                        <option value="mango">Mango</option>
+                                        <option value="orange">Orange</option>
+                                        <option value="pineapple">Pineapple</option>
+                                        <option value="banana">Banana</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Region *</label>
+                                <select id="forecastRegion" class="form-control">
+                                    <option value="">Select Region</option>
+                                    <option value="accra">Greater Accra</option>
+                                    <option value="kumasi">Ashanti (Kumasi)</option>
+                                    <option value="tamale">Northern (Tamale)</option>
+                                    <option value="cape coast">Central (Cape Coast)</option>
+                                    <option value="ho">Volta (Ho)</option>
+                                    <option value="sunyani">Brong Ahafo (Sunyani)</option>
+                                    <option value="koforidua">Eastern (Koforidua)</option>
+                                    <option value="wa">Upper West (Wa)</option>
+                                    <option value="bolgatanga">Upper East (Bolgatanga)</option>
+                                    <option value="takoradi">Western (Takoradi)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Growing Season *</label>
+                                <select id="season" class="form-control">
+                                    <option value="">Select Season</option>
+                                    <option value="major">Major Season (Apr-Jul) - Main rains</option>
+                                    <option value="minor">Minor Season (Sep-Dec) - Second rains</option>
+                                    <option value="dry">Dry Season (Jan-Mar) - Irrigation needed</option>
+                                    <option value="all">Year Round - Perennial crops</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Farm Size (Hectares) *</label>
+                                <input type="number" id="hectares" class="form-control" placeholder="Enter farm size" step="0.1" min="0.1" max="1000">
+                                <small class="form-help">Enter your farm size in hectares (e.g., 2.5)</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Farming Method</label>
+                                <select id="farmingMethod" class="form-control">
+                                    <option value="traditional">Traditional</option>
+                                    <option value="improved">Improved Traditional</option>
+                                    <option value="mechanized">Mechanized</option>
+                                    <option value="organic">Organic</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Irrigation Available</label>
+                                <select id="irrigation" class="form-control">
+                                    <option value="none">Rain-fed only</option>
+                                    <option value="partial">Partial irrigation</option>
+                                    <option value="full">Full irrigation</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-primary" onclick="getForecast()">
+                                <span class="btn-text">Generate Forecast</span>
+                                <div class="btn-loader" id="forecastLoader"></div>
+                            </button>
+                            <button class="btn-outline" onclick="clearForecastForm()">Clear Form</button>
+                        </div>
+                        <div id="forecast-results" class="results-container"></div>
+                        <div id="forecast-chart" class="chart-container" style="display:none;">
+                            <canvas id="forecastChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prices Section -->
+        <section id="prices" class="section">
+            <div class="container">
+                <h2 class="section-title">Market Intelligence</h2>
+                <div class="glass-card large">
+                    <div class="card-header">
+                        <h3>Real-time Market Prices</h3>
+                        <div class="price-summary" id="priceSummary" style="display:none;">
+                            <span class="summary-text">Showing prices for <span id="priceCount">0</span> items</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="price-filters">
+                            <div class="filter-grid">
+                                <div class="form-group">
+                                    <label>Crop Category</label>
+                                    <select id="priceCropFilter" class="form-control" onchange="filterPrices()">
+                                        <option value="">All Crops</option>
+                                        <option value="cereals">Cereals</option>
+                                        <option value="legumes">Legumes</option>
+                                        <option value="roots">Root Crops</option>
+                                        <option value="vegetables">Vegetables</option>
+                                        <option value="cash">Cash Crops</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Region</label>
+                                    <select id="priceRegionFilter" class="form-control" onchange="filterPrices()">
+                                        <option value="">All Regions</option>
+                                        <option value="accra">Greater Accra</option>
+                                        <option value="kumasi">Ashanti (Kumasi)</option>
+                                        <option value="tamale">Northern (Tamale)</option>
+                                        <option value="cape coast">Central (Cape Coast)</option>
+                                        <option value="ho">Volta (Ho)</option>
+                                        <option value="sunyani">Brong Ahafo (Sunyani)</option>
+                                        <option value="koforidua">Eastern (Koforidua)</option>
+                                        <option value="wa">Upper West (Wa)</option>
+                                        <option value="bolgatanga">Upper East (Bolgatanga)</option>
+                                        <option value="takoradi">Western (Takoradi)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Price Range (GHS)</label>
+                                    <select id="priceRangeFilter" class="form-control" onchange="filterPrices()">
+                                        <option value="">All Prices</option>
+                                        <option value="low">Low (< 50)</option>
+                                        <option value="medium">Medium (50-150)</option>
+                                        <option value="high">High (150+)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Sort By</label>
+                                    <select id="priceSortFilter" class="form-control" onchange="filterPrices()">
+                                        <option value="crop">Crop Name</option>
+                                        <option value="price_asc">Price (Low to High)</option>
+                                        <option value="price_desc">Price (High to Low)</option>
+                                        <option value="region">Region</option>
+                                        <option value="date">Date Updated</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="filter-actions">
+                                <button class="btn-primary" onclick="getPrices()">Refresh Data</button>
+                                <button class="btn-outline" onclick="clearPriceFilters()">Clear Filters</button>
+                                <button class="btn-outline" onclick="exportPrices()">Export CSV</button>
+                            </div>
+                        </div>
+                        <div class="price-stats" id="priceStats" style="display:none;">
+                            <div class="stats-row">
+                                <div class="stat-card">
+                                    <div class="stat-value" id="avgPrice">-</div>
+                                    <div class="stat-label">Average Price</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-value" id="highestPrice">-</div>
+                                    <div class="stat-label">Highest Price</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-value" id="lowestPrice">-</div>
+                                    <div class="stat-label">Lowest Price</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-value" id="priceVariation">-</div>
+                                    <div class="stat-label">Price Variation</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="prices-chart" class="chart-container" style="display:none;">
+                            <canvas id="pricesChart" width="400" height="200"></canvas>
+                        </div>
+                        <div id="prices-results" class="results-container">
+                            <div class="loading-state">
+                                <div class="spinner"></div>
+                                <p>Loading comprehensive market data...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Auth Modal -->
+        <div id="authModal" class="modal">
+            <div class="modal-content glass-card">
+                <div class="modal-header">
+                    <h3 id="authTitle">Login</h3>
+                    <button class="close-btn" onclick="closeModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="authForm">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" id="username" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="password" class="form-control" required>
+                        </div>
+                        <div id="signupFields" class="signup-fields">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="email" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" id="firstName" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" id="lastName" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Role</label>
+                                <select id="role" class="form-control">
+                                    <option value="farmer">Farmer</option>
+                                    <option value="agronomist">Agronomist</option>
+                                    <option value="supplier">Supplier</option>
+                                    <option value="extension_officer">Extension Officer</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary full-width">
+                            <span class="btn-text" id="authBtnText">Login</span>
+                            <div class="btn-loader" id="authLoader"></div>
+                        </button>
+                    </form>
+                    <div class="auth-switch">
+                        <p id="authSwitchText">Don't have an account? <a href="#" onclick="toggleAuthMode()">Sign up</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

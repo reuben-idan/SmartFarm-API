@@ -28,8 +28,9 @@ urlpatterns = [
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     
-    # Health Check
+    # Health Check & Status
     path('api/health/', HealthCheckView.as_view(), name='health-check'),
+    path('api/', include('core.urls')),
     
     # Authentication & Users
     path('api/auth/', include('users.urls')),
@@ -48,6 +49,9 @@ urlpatterns = [
 
     # Support Help Desk
     path('api/support/', include('support.urls')),
+
+    # Crops
+    path('api/crops/', include('crops.urls')),
 
     # Core App
     path('api/v1/', include('core.urls')),
