@@ -4,7 +4,7 @@ class SmartFarmApp {
         // Use environment-based API URL
         this.API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
             ? 'http://127.0.0.1:8000/api' 
-            : 'https://smartfarm-api-production.up.railway.app/api'; // Update with your deployed backend URL
+            : 'https://smartfarm-api.onrender.com/api';
         this.currentUser = null;
         this.isAuthMode = 'login';
         this.init();

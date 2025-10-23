@@ -434,3 +434,86 @@ INFO 2025-10-23 12:06:58,500 basehttp 4332 10252 "GET /api/health/ HTTP/1.1" 200
 WARNING 2025-10-23 12:06:58,627 api_status 4332 10252 Error getting statistics: type object 'Crop' has no attribute 'Season'
 INFO 2025-10-23 12:06:58,629 basehttp 4332 10252 "GET /api/status/ HTTP/1.1" 200 1779
 INFO 2025-10-23 12:06:58,657 basehttp 4332 10252 "GET /api/crops/ HTTP/1.1" 200 1839
+INFO 2025-10-23 12:19:45,776 autoreload 2312 11348 Watching for file changes with StatReloader
+INFO 2025-10-23 12:21:00,511 autoreload 18604 15636 Watching for file changes with StatReloader
+INFO 2025-10-23 12:21:09,372 autoreload 22048 21620 Watching for file changes with StatReloader
+WARNING 2025-10-23 12:50:48,355 api_status 4332 18044 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 12:50:48,367 basehttp 4332 18044 "GET /api/status/ HTTP/1.1" 200 1779
+INFO 2025-10-23 12:52:11,638 basehttp 4332 20496 "GET /api/prices/?limit=5 HTTP/1.1" 200 2021
+INFO 2025-10-23 12:53:02,099 basehttp 4332 14296 "GET /api/yield/forecast/?crop=maize&region=accra&season=major&hectares=2.5 HTTP/1.1" 200 340
+INFO 2025-10-23 12:53:42,181 basehttp 4332 15968 "GET /api/crops/?limit=5 HTTP/1.1" 200 2647
+INFO 2025-10-23 12:54:12,395 basehttp 4332 2972 "GET /api/recommendations/?region=kumasi HTTP/1.1" 200 1151
+INFO 2025-10-23 13:04:37,538 basehttp 4332 16408 "OPTIONS /api/status/ HTTP/1.1" 200 0
+INFO 2025-10-23 13:04:37,554 basehttp 4332 5272 "OPTIONS /api/status/ HTTP/1.1" 200 0
+WARNING 2025-10-23 13:04:37,997 api_status 4332 16408 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:04:38,015 basehttp 4332 16408 "GET /api/status/ HTTP/1.1" 200 1779
+INFO 2025-10-23 13:04:38,249 basehttp 4332 22752 "OPTIONS /api/prices/ HTTP/1.1" 200 0
+INFO 2025-10-23 13:04:38,522 basehttp 4332 22288 "OPTIONS /api/crops/ HTTP/1.1" 200 0
+WARNING 2025-10-23 13:04:38,535 api_status 4332 16408 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:04:38,539 basehttp 4332 16408 "GET /api/status/ HTTP/1.1" 200 1779
+INFO 2025-10-23 13:04:38,631 basehttp 4332 22752 "GET /api/crops/ HTTP/1.1" 200 2647
+WARNING 2025-10-23 13:04:38,635 api_status 4332 16408 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:04:38,640 basehttp 4332 16408 "GET /api/status/ HTTP/1.1" 200 1779
+WARNING 2025-10-23 13:04:38,668 api_status 4332 16408 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:04:38,673 basehttp 4332 16408 "GET /api/status/ HTTP/1.1" 200 1779
+INFO 2025-10-23 13:04:38,683 basehttp 4332 22752 "GET /api/crops/ HTTP/1.1" 200 2647
+INFO 2025-10-23 13:04:38,706 basehttp 4332 22752 "GET /api/crops/ HTTP/1.1" 200 2647
+INFO 2025-10-23 13:04:38,734 basehttp 4332 22288 "GET /api/prices/ HTTP/1.1" 200 2013
+WARNING 2025-10-23 13:05:13,782 api_status 4332 23256 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:05:13,786 basehttp 4332 23256 "GET /api/status/ HTTP/1.1" 200 1779
+WARNING 2025-10-23 13:05:16,051 api_status 4332 23256 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:05:16,052 basehttp 4332 23256 "GET /api/status/ HTTP/1.1" 200 1779
+WARNING 2025-10-23 13:05:16,186 api_status 4332 23256 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:05:16,189 basehttp 4332 23256 "GET /api/status/ HTTP/1.1" 200 1779
+INFO 2025-10-23 13:05:21,330 basehttp 4332 12408 "GET /api/prices/ HTTP/1.1" 200 2013
+WARNING 2025-10-23 13:05:22,791 api_status 4332 15528 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:05:22,798 basehttp 4332 15528 - Broken pipe from ('127.0.0.1', 55275)
+INFO 2025-10-23 13:05:22,825 basehttp 4332 20556 - Broken pipe from ('127.0.0.1', 55273)
+WARNING 2025-10-23 13:05:23,627 api_status 4332 12408 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:05:23,633 basehttp 4332 12408 "GET /api/status/ HTTP/1.1" 200 1779
+WARNING 2025-10-23 13:05:24,108 api_status 4332 12408 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:05:24,110 basehttp 4332 12408 "GET /api/status/ HTTP/1.1" 200 1779
+WARNING 2025-10-23 13:05:24,664 api_status 4332 12408 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:05:24,668 basehttp 4332 12408 "GET /api/status/ HTTP/1.1" 200 1779
+INFO 2025-10-23 13:05:24,698 basehttp 4332 12408 "GET /api/crops/ HTTP/1.1" 200 2647
+INFO 2025-10-23 13:05:25,207 basehttp 4332 12408 "GET /api/crops/ HTTP/1.1" 200 2647
+INFO 2025-10-23 13:05:26,837 basehttp 4332 10424 "GET /api/prices/ HTTP/1.1" 200 2013
+WARNING 2025-10-23 13:05:27,167 api_status 4332 9540 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:05:27,171 basehttp 4332 9540 "GET /api/status/ HTTP/1.1" 200 1779
+INFO 2025-10-23 13:05:28,916 basehttp 4332 9540 "GET /api/crops/ HTTP/1.1" 200 2647
+INFO 2025-10-23 13:06:05,903 basehttp 4332 84 "OPTIONS /api/yield/forecast/?crop=maize&region=kumasi&season=minor&hectares=2 HTTP/1.1" 200 0
+INFO 2025-10-23 13:06:13,285 basehttp 4332 84 "GET /api/yield/forecast/?crop=maize&region=kumasi&season=minor&hectares=2 HTTP/1.1" 200 342
+WARNING 2025-10-23 13:17:08,601 api_status 4332 7336 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:17:08,626 basehttp 4332 7336 "GET /api/status/ HTTP/1.1" 200 1779
+WARNING 2025-10-23 13:17:14,835 api_status 4332 22768 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:17:14,839 basehttp 4332 22768 "GET /api/status/ HTTP/1.1" 200 1779
+INFO 2025-10-23 13:17:14,991 basehttp 4332 18756 "GET /api/prices/ HTTP/1.1" 200 2013
+INFO 2025-10-23 13:17:15,009 basehttp 4332 20920 "GET /api/crops/ HTTP/1.1" 200 2647
+WARNING 2025-10-23 13:17:39,758 api_status 4332 19756 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:17:39,764 basehttp 4332 19756 "GET /api/status/ HTTP/1.1" 200 1779
+WARNING 2025-10-23 13:17:39,784 api_status 4332 19756 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:17:39,785 basehttp 4332 19756 "GET /api/status/ HTTP/1.1" 200 1779
+INFO 2025-10-23 13:17:48,242 basehttp 4332 19756 "GET /api/crops/ HTTP/1.1" 200 2647
+INFO 2025-10-23 13:17:48,256 basehttp 4332 19756 "GET /api/crops/ HTTP/1.1" 200 2647
+INFO 2025-10-23 13:18:42,875 autoreload 4332 20860 C:\Users\IDAN\SmartFarm-API\crops\migrations\__init__.py changed, reloading.
+INFO 2025-10-23 13:18:43,459 autoreload 18604 15636 C:\Users\IDAN\SmartFarm-API\smartfarm\__init__.py changed, reloading.
+INFO 2025-10-23 13:18:43,675 autoreload 1904 21768 C:\Users\IDAN\SmartFarm-API\suppliers\migrations\__init__.py changed, reloading.
+INFO 2025-10-23 13:18:44,689 autoreload 2312 11348 C:\Users\IDAN\SmartFarm-API\support\permissions.py changed, reloading.
+INFO 2025-10-23 13:18:45,241 autoreload 10200 14200 C:\Users\IDAN\SmartFarm-API\suppliers\migrations\0002_initial.py changed, reloading.
+INFO 2025-10-23 13:18:45,011 autoreload 22048 21620 C:\Users\IDAN\SmartFarm-API\crops\admin.py changed, reloading.
+INFO 2025-10-23 13:19:01,213 autoreload 7076 15896 Watching for file changes with StatReloader
+INFO 2025-10-23 13:19:10,720 autoreload 14420 9056 Watching for file changes with StatReloader
+INFO 2025-10-23 13:19:11,727 autoreload 9264 1900 Watching for file changes with StatReloader
+INFO 2025-10-23 13:19:11,881 autoreload 20736 19660 Watching for file changes with StatReloader
+INFO 2025-10-23 13:19:12,206 autoreload 20868 19084 Watching for file changes with StatReloader
+INFO 2025-10-23 13:19:12,818 autoreload 10840 18740 Watching for file changes with StatReloader
+WARNING 2025-10-23 13:24:42,959 api_status 7076 23492 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:24:43,143 basehttp 7076 23492 "GET /api/status/ HTTP/1.1" 200 1779
+WARNING 2025-10-23 13:24:43,628 api_status 7076 23492 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:24:43,638 basehttp 7076 23492 "GET /api/status/ HTTP/1.1" 200 1779
+INFO 2025-10-23 13:24:43,693 basehttp 7076 11328 "GET /api/prices/ HTTP/1.1" 200 2013
+INFO 2025-10-23 13:24:43,909 basehttp 7076 2848 "GET /api/crops/ HTTP/1.1" 200 2647
+INFO 2025-10-23 13:24:44,010 basehttp 7076 2848 "GET /api/crops/ HTTP/1.1" 200 2647
+WARNING 2025-10-23 13:24:44,370 api_status 7076 2848 Error getting statistics: type object 'Crop' has no attribute 'Season'
+INFO 2025-10-23 13:24:44,372 basehttp 7076 2848 "GET /api/status/ HTTP/1.1" 200 1779
+INFO 2025-10-23 13:24:44,553 basehttp 7076 2848 "GET /api/crops/ HTTP/1.1" 200 2647

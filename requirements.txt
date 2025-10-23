@@ -12,3 +12,7 @@ isort==5.13.2
 flake8==7.0.0
 pre-commit==3.6.2
 Faker==24.9.0
+gunicorn==21.2.0
+psycopg2-binary==2.9.9
+whitenoise==6.6.0
+dj-database-url==2.1.0
