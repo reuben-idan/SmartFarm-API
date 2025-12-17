@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2d5016">
+    <title>DataHaul - Farm Inputs Marketplace</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="datahaul.css">
+</head>
+<body>
+    <!-- Auth Screen -->
+    <div id="authScreen" class="screen active">
+        <div class="auth-container">
+            <div class="logo">🌾 DataHaul</div>
+            <h1>Welcome Farmer!</h1>
+            <p>Buy verified farm inputs at transparent prices</p>
+            
+            <div id="phoneForm" class="form-section">
+                <input type="tel" id="phoneInput" placeholder="0XX XXX XXXX" maxlength="10">
+                <button onclick="sendOTP()" class="btn-primary">Get OTP</button>
+            </div>
+            
+            <div id="otpForm" class="form-section hidden">
+                <input type="text" id="otpInput" placeholder="Enter 6-digit OTP" maxlength="6">
+                <button onclick="verifyOTP()" class="btn-primary">Verify & Login</button>
+                <button onclick="resendOTP()" class="btn-text">Resend OTP</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onboarding Screen -->
+    <div id="onboardingScreen" class="screen">
+        <div class="container">
+            <h2>Tell us about your farm</h2>
+            <form id="onboardingForm">
+                <label>Location</label>
+                <select id="location" required>
+                    <option value="">Select Region</option>
+                    <option value="accra">Greater Accra</option>
+                    <option value="cape coast">Central Region</option>
+                </select>
+                
+                <label>What do you grow?</label>
+                <div class="crop-chips">
+                    <label class="chip"><input type="checkbox" name="crop" value="maize"> 🌽 Maize</label>
+                    <label class="chip"><input type="checkbox" name="crop" value="tomato"> 🍅 Tomato</label>
+                    <label class="chip"><input type="checkbox" name="crop" value="pepper"> 🌶️ Pepper</label>
+                    <label class="chip"><input type="checkbox" name="crop" value="onion"> 🧅 Onion</label>
+                </div>
+                
+                <label>Farm Size</label>
+                <select id="farmSize" required>
+                    <option value="">Select Size</option>
+                    <option value="1">1 acre</option>
+                    <option value="2">2 acres</option>
+                    <option value="3">3 acres</option>
+                    <option value="4">4 acres</option>
+                    <option value="5">5 acres</option>
+                </select>
+                
+                <button type="submit" class="btn-primary">Continue</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Home Screen -->
+    <div id="homeScreen" class="screen">
+        <div class="header">
+            <div class="user-info">
+                <span id="userName">👨‍🌾 Farmer</span>
+                <span id="userLocation">📍 Accra</span>
+            </div>
+            <button onclick="showProfile()" class="icon-btn">⚙️</button>
+        </div>
+
+        <div class="container">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search seeds, fertilizer..." onkeyup="searchProducts()">
+            </div>
+
+            <div class="category-tabs">
+                <button class="tab active" onclick="filterCategory('all')">All</button>
+                <button class="tab" onclick="filterCategory('seeds')">🌱 Seeds</button>
+                <button class="tab" onclick="filterCategory('fertilizer')">💧 Fertilizer</button>
+            </div>
+
+            <div id="productList" class="product-grid"></div>
+        </div>
+
+        <div class="bottom-nav">
+            <button class="nav-btn active" onclick="showHome()">🏠<br>Home</button>
+            <button class="nav-btn" onclick="showOrders()">📦<br>Orders</button>
+            <button class="nav-btn" onclick="showCart()">🛒<br>Cart<span id="cartBadge" class="badge">0</span></button>
+        </div>
+    </div>
+
+    <!-- Product Detail Screen -->
+    <div id="productScreen" class="screen">
+        <div class="header">
+            <button onclick="showHome()" class="icon-btn">←</button>
+            <h3>Product Details</h3>
+        </div>
+        <div id="productDetail" class="container"></div>
+    </div>
+
+    <!-- Cart Screen -->
+    <div id="cartScreen" class="screen">
+        <div class="header">
+            <button onclick="showHome()" class="icon-btn">←</button>
+            <h3>Your Cart</h3>
+        </div>
+        <div class="container">
+            <div id="cartItems"></div>
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Total</span>
+                    <span id="cartTotal" class="total">GHS 0.00</span>
+                </div>
+                <button onclick="checkout()" class="btn-primary">Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Screen -->
+    <div id="checkoutScreen" class="screen">
+        <div class="header">
+            <button onclick="showCart()" class="icon-btn">←</button>
+            <h3>Checkout</h3>
+        </div>
+        <div class="container">
+            <form id="checkoutForm">
+                <label>Delivery Location</label>
+                <input type="text" id="deliveryLocation" required>
+                
+                <label>Phone Number</label>
+                <input type="tel" id="deliveryPhone" required>
+                
+                <label>Payment Method</label>
+                <div class="payment-options">
+                    <label class="radio-card">
+                        <input type="radio" name="payment" value="pay_on_delivery" checked>
+                        <div>💵 Pay on Delivery</div>
+                    </label>
+                    <label class="radio-card">
+                        <input type="radio" name="payment" value="pay_on_pickup">
+                        <div>🏪 Pay on Pickup</div>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn-primary">Place Order</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Orders Screen -->
+    <div id="ordersScreen" class="screen">
+        <div class="header">
+            <button onclick="showHome()" class="icon-btn">←</button>
+            <h3>My Orders</h3>
+        </div>
+        <div id="ordersList" class="container"></div>
+    </div>
+
+    <!-- Supplier Dashboard -->
+    <div id="supplierScreen" class="screen">
+        <div class="header">
+            <h3>Supplier Dashboard</h3>
+            <button onclick="logout()" class="icon-btn">🚪</button>
+        </div>
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalOrders">0</div>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="pendingOrders">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h4>Incoming Orders</h4>
+                <div id="supplierOrders"></div>
+            </div>
+            
+            <div class="section">
+                <h4>My Products</h4>
+                <button onclick="showAddProduct()" class="btn-secondary">+ Add Product</button>
+                <div id="supplierProducts"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="datahaul.js"></script>
+</body>
+</html>

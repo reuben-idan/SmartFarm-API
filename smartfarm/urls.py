@@ -34,6 +34,7 @@ urlpatterns = [
     
     # Authentication & Users
     path('api/auth/', include('users.urls')),
+    path('api/auth/', include('authentication.urls')),
     
     # Suppliers
     path('api/suppliers/', include('suppliers.urls')),
