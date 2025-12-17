@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'recommendations',
     'yields',
     'support',
+    'orders',
 ]
 
 MIDDLEWARE = [

@@ -53,6 +53,9 @@ urlpatterns = [
     # Crops
     path('api/crops/', include('crops.urls')),
 
+    # Orders (DataHaul Marketplace)
+    path('api/orders/', include('orders.urls')),
+
     # Core App
     path('api/v1/', include('core.urls')),
 ]
